@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quem Sou Eu?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --surface2: #1e1e24;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0eff4;
+      --muted: #888899;
+      --accent: #c8ff57;
+      --accent-dim: rgba(200,255,87,0.12);
+      --accent-text: #0d0d0f;
+      --danger: #ff5757;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* header */
+    .header { margin-bottom: 2.5rem; animation: fadeUp 0.5s ease both; }
+    .header-tag {
+      display: inline-block;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,255,87,0.2);
+      border-radius: 999px;
+      padding: 4px 12px;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 8vw, 3rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -1px;
+    }
+    h1 span { color: var(--accent); }
+    .subtitle { font-size: 14px; color: var(--muted); margin-top: 0.5rem; line-height: 1.6; }
+
+    /* card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    input[type=text] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      padding: 12px 14px;
+      margin-bottom: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type=text]:focus { border-color: var(--accent); }
+    input[type=text]::placeholder { color: var(--muted); }
+
+    .btn {
+      display: block;
+      width: 100%;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 13px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      margin-bottom: 0.6rem;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+    .btn:hover { background: var(--surface2); border-color: var(--border2); }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: transparent;
+    }
+    .btn-primary:hover { background: #d4ff6a; }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    .divider {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 1.2rem 0;
+      position: relative;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 38%;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .error {
+      font-size: 13px;
+      color: var(--danger);
+      margin-top: 0.5rem;
+      display: none;
+      padding: 8px 12px;
+      background: rgba(255,87,87,0.08);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,87,87,0.2);
+    }
+
+    /* code display */
+    .code-display {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: 10px;
+      text-align: center;
+      color: var(--accent);
+      padding: 1.5rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,255,87,0.2);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+
+    .share-row { display: flex; gap: 8px; margin-bottom: 1.25rem; }
+    .share-row input { margin-bottom: 0; flex: 1; font-size: 12px; color: var(--muted); }
+    .share-row .btn { width: auto; margin-bottom: 0; padding: 12px 16px; font-size: 13px; white-space: nowrap; }
+
+    /* section label */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    /* player list */
+    .player-list { list-style: none; }
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .player-item:last-child { border-bottom: none; }
+    .avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,255,87,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-host { background: rgba(200,255,87,0.12); color: var(--accent); border: 1px solid rgba(200,255,87,0.2); }
+    .badge-you { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    .ml-auto { margin-left: auto; display: flex; gap: 6px; }
+
+    /* info box */
+    .info-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .cat-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.75rem; }
+    .cat-pill {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+    }
+
+    .waiting-msg {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .waiting-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 8px;
+      animation: pulse 1.4s infinite;
+    }
+
+    /* identity cards */
+    .mystery-card {
+      background: var(--surface);
+      border: 1px dashed var(--border2);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 0.75rem;
+    }
+    .mystery-marks {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: 10px;
+      color: var(--muted);
+      opacity: 0.4;
+    }
+    .mystery-hint { font-size: 13px; color: var(--muted); margin-top: 0.75rem; }
+
+    .identity-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .identity-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .identity-info { flex: 1; }
+    .identity-player { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+    .identity-name-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
+    .identity-cat {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(200,255,87,0.15);
+      margin-top: 4px;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-btn:hover { color: var(--text); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="header">
+      <div class="header-tag">Multiplayer</div>
+      <h1>Quem<br><span>Sou Eu?</span></h1>
+      <p class="subtitle">Crie uma sala, mande o código pros amigos no Discord e descubra quem você é!</p>
+    </div>
+    <div class="card">
+      <label>Seu nome</label>
+      <input type="text" id="home-name" placeholder="Como quer ser chamado?" maxlength="20" />
+      <button class="btn btn-primary" onclick="createRoom()">✦ Criar sala</button>
+      <div class="divider">ou entre em uma sala</div>
+      <label>Código da sala</label>
+      <input type="text" id="home-code" placeholder="Ex: AB12" maxlength="4" style="text-transform:uppercase; letter-spacing:4px; font-family:'Syne',sans-serif; font-weight:700;" />
+      <button class="btn" onclick="joinRoom()">Entrar na sala →</button>
+    </div>
+    <p class="error" id="home-error"></p>
+  </div>
+
+  <!-- LOBBY -->
+  <div class="screen" id="screen-lobby">
+    <div class="header">
+      <div class="header-tag" id="lobby-tag">Sala criada</div>
+      <h1 id="lobby-title">Sala<br><span>Criada!</span></h1>
+      <p class="subtitle">Compartilhe o código abaixo com seus amigos no Discord</p>
+    </div>
+
+    <div class="code-display" id="lobby-code"></div>
+
+    <div class="share-row">
+      <input type="text" id="share-link" readonly />
+      <button class="btn" onclick="copyLink()" id="copy-btn">Copiar link</button>
+    </div>
+
+    <div class="section-label">Jogadores na sala</div>
+    <div class="card" style="padding: 0.25rem 1.5rem;">
+      <ul class="player-list" id="lobby-players"></ul>
+    </div>
+
+    <div id="host-controls" style="display:none">
+      <div class="info-box">
+        O sistema sorteia automaticamente um famoso diferente para cada jogador. Ninguém saberá quem é o seu!
+        <div class="cat-pills">
+          <span class="cat-pill">⚽ Futebol</span>
+          <span class="cat-pill">🎵 Música</span>
+          <span class="cat-pill">🎬 Cinema</span>
+          <span class="cat-pill">📺 TV</span>
+          <span class="cat-pill">🏆 Esportes</span>
+          <span class="cat-pill">🌎 Política</span>
+          <span class="cat-pill">💻 Tecnologia</span>
+          <span class="cat-pill">🎮 Games/Anime</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="startGame()" id="start-btn" disabled>Sortear e iniciar o jogo ✦</button>
+      <p class="error" id="lobby-error"></p>
+    </div>
+
+    <div id="guest-waiting" style="display:none">
+      <div class="waiting-msg"><span class="waiting-dot"></span>Aguardando o host iniciar o jogo...</div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="screen-game">
+    <div class="header">
+      <div class="header-tag">Jogo em andamento</div>
+      <h1>Quem<br><span>Sou Eu?</span></h1>
+      <p class="subtitle">Você vê o personagem de todos — menos o seu próprio. Faça perguntas de sim/não!</p>
+    </div>
+
+    <div class="section-label">Seu personagem</div>
+    <div class="mystery-card">
+      <div class="mystery-marks">? ? ?</div>
+      <div class="mystery-hint">Faça perguntas de sim ou não para descobrir!</div>
+    </div>
+
+    <div class="section-label">Personagens dos outros</div>
+    <div id="others-list"></div>
+
+    <button class="back-btn" onclick="leaveGame()">← Sair do jogo</button>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'whoami_rooms_v2';
+const POLL_MS = 2000;
+
+const FAMOSOS = [
+  { name: 'Pelé', cat: 'Futebol' },
+  { name: 'Ronaldo Fenômeno', cat: 'Futebol' },
+  { name: 'Ronaldinho Gaúcho', cat: 'Futebol' },
+  { name: 'Neymar', cat: 'Futebol' },
+  { name: 'Messi', cat: 'Futebol' },
+  { name: 'Cristiano Ronaldo', cat: 'Futebol' },
+  { name: 'Zidane', cat: 'Futebol' },
+  { name: 'Romário', cat: 'Futebol' },
+  { name: 'Mbappé', cat: 'Futebol' },
+  { name: 'Vini Jr', cat: 'Futebol' },
+  { name: 'Haaland', cat: 'Futebol' },
+  { name: 'Michael Jackson', cat: 'Música' },
+  { name: 'Madonna', cat: 'Música' },
+  { name: 'Beyoncé', cat: 'Música' },
+  { name: 'Elvis Presley', cat: 'Música' },
+  { name: 'Freddie Mercury', cat: 'Música' },
+  { name: 'Lady Gaga', cat: 'Música' },
+  { name: 'Taylor Swift', cat: 'Música' },
+  { name: 'Eminem', cat: 'Música' },
+  { name: 'Rihanna', cat: 'Música' },
+  { name: 'The Weeknd', cat: 'Música' },
+  { name: 'Anitta', cat: 'Música' },
+  { name: 'Roberto Carlos', cat: 'Música' },
+  { name: 'Caetano Veloso', cat: 'Música' },
+  { name: 'Leonardo DiCaprio', cat: 'Cinema' },
+  { name: 'Brad Pitt', cat: 'Cinema' },
+  { name: 'Angelina Jolie', cat: 'Cinema' },
+  { name: 'Marilyn Monroe', cat: 'Cinema' },
+  { name: 'Tom Hanks', cat: 'Cinema' },
+  { name: 'Meryl Streep', cat: 'Cinema' },
+  { name: 'Will Smith', cat: 'Cinema' },
+  { name: 'Scarlett Johansson', cat: 'Cinema' },
+  { name: 'Johnny Depp', cat: 'Cinema' },
+  { name: 'Margot Robbie', cat: 'Cinema' },
+  { name: 'Dwayne Johnson', cat: 'Cinema' },
+  { name: 'Oprah Winfrey', cat: 'TV / Entretenimento' },
+  { name: 'MrBeast', cat: 'TV / Entretenimento' },
+  { name: 'Silvio Santos', cat: 'TV / Entretenimento' },
+  { name: 'Faustão', cat: 'TV / Entretenimento' },
+  { name: 'Xuxa', cat: 'TV / Entretenimento' },
+  { name: 'Usain Bolt', cat: 'Esportes' },
+  { name: 'Serena Williams', cat: 'Esportes' },
+  { name: 'Michael Jordan', cat: 'Esportes' },
+  { name: 'Muhammad Ali', cat: 'Esportes' },
+  { name: 'Roger Federer', cat: 'Esportes' },
+  { name: 'LeBron James', cat: 'Esportes' },
+  { name: 'Ayrton Senna', cat: 'Esportes' },
+  { name: 'Guga Kuerten', cat: 'Esportes' },
+  { name: 'Simone Biles', cat: 'Esportes' },
+  { name: 'Lewis Hamilton', cat: 'Esportes' },
+  { name: 'Barack Obama', cat: 'Política' },
+  { name: 'Lula', cat: 'Política' },
+  { name: 'Donald Trump', cat: 'Política' },
+  { name: 'Angela Merkel', cat: 'Política' },
+  { name: 'Nelson Mandela', cat: 'Política' },
+  { name: 'Vladimir Putin', cat: 'Política' },
+  { name: 'Elon Musk', cat: 'Tecnologia' },
+  { name: 'Bill Gates', cat: 'Tecnologia' },
+  { name: 'Steve Jobs', cat: 'Tecnologia' },
+  { name: 'Mark Zuckerberg', cat: 'Tecnologia' },
+  { name: 'Jeff Bezos', cat: 'Tecnologia' },
+  { name: 'Naruto', cat: 'Anime' },
+  { name: 'Goku', cat: 'Anime' },
+  { name: 'Luffy', cat: 'Anime' },
+  { name: 'Pikachu', cat: 'Games / Anime' },
+  { name: 'Mario', cat: 'Games' },
+  { name: 'Lara Croft', cat: 'Games' },
+  { name: 'Kratos', cat: 'Games' },
+  { name: 'Master Chief', cat: 'Games' },
+];
+
+let state = { roomCode: null, myName: null, isHost: false, pollTimer: null };
+
+function getRooms() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
+function saveRooms(r) { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); }
+function genCode() { return Math.random().toString(36).substring(2, 6).toUpperCase(); }
+function initials(n) { return n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase(); }
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function assignFamosos(players) {
+  const shuffled = shuffle(FAMOSOS);
+  const assigned = {};
+  players.forEach((p, i) => { assigned[p.name] = shuffled[i % shuffled.length]; });
+  return assigned;
+}
+
+function createRoom() {
+  const name = document.getElementById('home-name').value.trim();
+  if (!name) return showError('home-error', 'Digite seu nome primeiro.');
+  const code = genCode();
+  const rooms = getRooms();
+  rooms[code] = { host: name, players: [{ name }], characters: {}, started: false, createdAt: Date.now() };
+  saveRooms(rooms);
+  state = { roomCode: code, myName: name, isHost: true };
+  enterLobby();
+}
+
+function joinRoom() {
+  const name = document.getElementById('home-name').value.trim();
+  const code = document.getElementById('home-code').value.trim().toUpperCase();
+  if (!name) return showError('home-error', 'Digite seu nome primeiro.');
+  if (code.length < 2) return showError('home-error', 'Digite o código da sala.');
+  const rooms = getRooms();
+  const room = rooms[code];
+  if (!room) return showError('home-error', 'Sala não encontrada. Verifique o código.');
+  if (room.started) return showError('home-error', 'Esse jogo já começou.');
+  if (room.players.find(p => p.name.toLowerCase() === name.toLowerCase())) return showError('home-error', 'Já existe alguém com esse nome na sala.');
+  room.players.push({ name });
+  saveRooms(rooms);
+  state = { roomCode: code, myName: name, isHost: false };
+  enterLobby();
+}
+
+function enterLobby() {
+  showScreen('screen-lobby');
+  document.getElementById('lobby-code').textContent = state.roomCode;
+  document.getElementById('lobby-title').innerHTML = state.isHost ? 'Sala<br><span>Criada!</span>' : 'Você<br><span>Entrou!</span>';
+  document.getElementById('lobby-tag').textContent = state.isHost ? 'Sala criada' : 'Na sala';
+  const link = window.location.origin + window.location.pathname + '?room=' + state.roomCode;
+  document.getElementById('share-link').value = link;
+  document.getElementById('host-controls').style.display = state.isHost ? 'block' : 'none';
+  document.getElementById('guest-waiting').style.display = state.isHost ? 'none' : 'block';
+  renderLobby();
+  clearInterval(state.pollTimer);
+  state.pollTimer = setInterval(pollLobby, POLL_MS);
+}
+
+function renderLobby() {
+  const rooms = getRooms();
+  const room = rooms[state.roomCode];
+  if (!room) return;
+  if (room.started) { clearInterval(state.pollTimer); return enterGame(); }
+
+  const ul = document.getElementById('lobby-players');
+  ul.innerHTML = '';
+  room.players.forEach(p => {
+    const li = document.createElement('li');
+    li.className = 'player-item';
+    const isHost = p.name === room.host;
+    const isMe = p.name === state.myName;
+    li.innerHTML = `
+      <div class="avatar">${initials(p.name)}</div>
+      <span>${p.name}</span>
+      <div class="ml-auto">
+        ${isHost ? '<span class="badge badge-host">host</span>' : ''}
+        ${isMe ? '<span class="badge badge-you">você</span>' : ''}
+      </div>
+    `;
+    ul.appendChild(li);
+  });
+
+  if (state.isHost) {
+    document.getElementById('start-btn').disabled = room.players.length < 2;
+  }
+}
+
+function startGame() {
+  const rooms = getRooms();
+  const room = rooms[state.roomCode];
+  if (!room) return;
+  if (room.players.length < 2) return showError('lobby-error', 'Precisa de pelo menos 2 jogadores.');
+  room.characters = assignFamosos(room.players);
+  room.started = true;
+  saveRooms(rooms);
+  clearInterval(state.pollTimer);
+  enterGame();
+}
+
+function enterGame() {
+  showScreen('screen-game');
+  const rooms = getRooms();
+  const room = rooms[state.roomCode];
+  if (!room) return;
+
+  const others = document.getElementById('others-list');
+  others.innerHTML = '';
+  room.players.forEach((p, idx) => {
+    if (p.name === state.myName) return;
+    const famoso = room.characters[p.name] || { name: '?', cat: '' };
+    const card = document.createElement('div');
+    card.className = 'identity-card';
+    card.style.animationDelay = (idx * 0.07) + 's';
+    card.innerHTML = `
+      <div class="identity-avatar">${initials(p.name)}</div>
+      <div class="identity-info">
+        <div class="identity-player">${p.name} é...</div>
+        <div class="identity-name-val">${famoso.name}</div>
+        <span class="identity-cat">${famoso.cat}</span>
+      </div>
+    `;
+    others.appendChild(card);
+  });
+}
+
+function pollLobby() {
+  const rooms = getRooms();
+  const room = rooms[state.roomCode];
+  if (!room) return;
+  if (room.started) { clearInterval(state.pollTimer); return enterGame(); }
+  renderLobby();
+}
+
+function copyLink() {
+  const link = document.getElementById('share-link').value;
+  navigator.clipboard.writeText(link).catch(() => {});
+  const btn = document.getElementById('copy-btn');
+  btn.textContent = 'Copiado ✓';
+  setTimeout(() => btn.textContent = 'Copiar link', 2000);
+}
+
+function leaveGame() {
+  clearInterval(state.pollTimer);
+  const rooms = getRooms();
+  const room = rooms[state.roomCode];
+  if (room && !state.isHost) {
+    room.players = room.players.filter(p => p.name !== state.myName);
+    saveRooms(rooms);
+  }
+  state = {};
+  showScreen('screen-home');
+}
+
+// auto-fill code from URL
+const params = new URLSearchParams(window.location.search);
+if (params.get('room')) document.getElementById('home-code').value = params.get('room');
+</script>
+</body>
+</html>
