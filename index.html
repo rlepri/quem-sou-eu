@@ -21,6 +21,7 @@
       --accent-dim: rgba(200,255,87,0.12);
       --accent-text: #0d0d0f;
       --danger: #ff5757;
+      --danger-dim: rgba(255,87,87,0.1);
       --radius: 14px;
       --radius-sm: 8px;
     }
@@ -85,7 +86,7 @@
       margin-bottom: 8px;
     }
 
-    input[type=text] {
+    input[type=text], input[type=password] {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -98,8 +99,8 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    input[type=text]:focus { border-color: var(--accent); }
-    input[type=text]::placeholder { color: var(--muted); }
+    input[type=text]:focus, input[type=password]:focus { border-color: var(--accent); }
+    input[type=text]::placeholder, input[type=password]::placeholder { color: var(--muted); }
 
     .btn {
       display: block;
@@ -117,7 +118,7 @@
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
       letter-spacing: 0.3px;
     }
-    .btn:hover { background: var(--surface2); border-color: var(--border2); }
+    .btn:hover { background: var(--surface2); }
     .btn:active { transform: scale(0.98); }
 
     .btn-primary {
@@ -127,6 +128,20 @@
     }
     .btn-primary:hover { background: #d4ff6a; }
     .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    .btn-danger {
+      background: var(--danger-dim);
+      color: var(--danger);
+      border-color: rgba(255,87,87,0.2);
+    }
+    .btn-danger:hover { background: rgba(255,87,87,0.18); }
+
+    .btn-sm {
+      width: auto;
+      padding: 6px 14px;
+      font-size: 12px;
+      margin-bottom: 0;
+    }
 
     .divider {
       text-align: center;
@@ -152,9 +167,20 @@
       margin-top: 0.5rem;
       display: none;
       padding: 8px 12px;
-      background: rgba(255,87,87,0.08);
+      background: var(--danger-dim);
       border-radius: var(--radius-sm);
       border: 1px solid rgba(255,87,87,0.2);
+    }
+
+    .success-msg {
+      font-size: 13px;
+      color: var(--accent);
+      margin-top: 0.5rem;
+      display: none;
+      padding: 8px 12px;
+      background: var(--accent-dim);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(200,255,87,0.2);
     }
 
     .code-display {
@@ -216,7 +242,7 @@
     }
     .badge-host { background: rgba(200,255,87,0.12); color: var(--accent); border: 1px solid rgba(200,255,87,0.2); }
     .badge-you { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-    .ml-auto { margin-left: auto; display: flex; gap: 6px; }
+    .ml-auto { margin-left: auto; display: flex; gap: 6px; align-items: center; }
 
     .info-box {
       background: var(--surface2);
@@ -321,7 +347,87 @@
     }
     .back-btn:hover { color: var(--text); }
 
-    /* Loading overlay */
+    /* Admin link */
+    .admin-link {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .admin-link button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+    }
+    .admin-link button:hover { opacity: 1; }
+
+    /* Admin character list */
+    .char-list { list-style: none; }
+    .char-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      animation: fadeUp 0.3s ease both;
+    }
+    .char-item:last-child { border-bottom: none; }
+    .char-name { flex: 1; font-weight: 500; }
+    .char-cat {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border2);
+      white-space: nowrap;
+    }
+
+    /* Add form */
+    .add-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .add-form input { margin-bottom: 0; flex: 1; min-width: 120px; }
+    .add-form .btn { width: auto; margin-bottom: 0; padding: 12px 16px; white-space: nowrap; }
+
+    /* Category filter tabs */
+    .cat-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 1rem;
+    }
+    .cat-tab {
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .cat-tab.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-color: rgba(200,255,87,0.3);
+    }
+
+    .char-count {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 0.75rem 0 0.25rem;
+    }
+
+    /* Loading */
     .loading-overlay {
       position: fixed;
       inset: 0;
@@ -378,6 +484,9 @@
       <button class="btn" onclick="joinRoom()">Entrar na sala →</button>
     </div>
     <p class="error" id="home-error"></p>
+    <div class="admin-link">
+      <button onclick="showAdminLogin()">⚙ admin</button>
+    </div>
   </div>
 
   <!-- LOBBY -->
@@ -443,93 +552,69 @@
     <button class="back-btn" onclick="leaveGame()">← Sair do jogo</button>
   </div>
 
+  <!-- ADMIN LOGIN -->
+  <div class="screen" id="screen-admin-login">
+    <div class="header">
+      <div class="header-tag">Restrito</div>
+      <h1>Área<br><span>Admin</span></h1>
+      <p class="subtitle">Digite a senha para acessar o painel de personagens.</p>
+    </div>
+    <div class="card">
+      <label>Senha</label>
+      <input type="password" id="admin-password" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') checkAdminPassword()" />
+      <button class="btn btn-primary" onclick="checkAdminPassword()">Entrar →</button>
+    </div>
+    <p class="error" id="admin-login-error"></p>
+    <button class="back-btn" onclick="showScreen('screen-home')">← Voltar</button>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="screen" id="screen-admin">
+    <div class="header">
+      <div class="header-tag">Admin</div>
+      <h1>Personagens</h1>
+      <p class="subtitle">Adicione ou remova personagens do jogo. As mudanças valem na próxima partida.</p>
+    </div>
+
+    <div class="card">
+      <label>Adicionar personagem</label>
+      <div class="add-form">
+        <input type="text" id="new-char-name" placeholder="Nome" maxlength="40" onkeydown="if(event.key==='Enter') addCharacter()" />
+        <input type="text" id="new-char-cat" placeholder="Categoria" maxlength="30" onkeydown="if(event.key==='Enter') addCharacter()" />
+      </div>
+      <button class="btn btn-primary" onclick="addCharacter()">+ Adicionar</button>
+      <p class="error" id="admin-add-error"></p>
+      <p class="success-msg" id="admin-add-success"></p>
+    </div>
+
+    <div class="cat-tabs" id="admin-cat-tabs"></div>
+
+    <div class="card" style="padding: 0 1.5rem;">
+      <p class="char-count" id="char-count"></p>
+      <ul class="char-list" id="admin-char-list"></ul>
+    </div>
+
+    <button class="back-btn" onclick="showScreen('screen-home')">← Voltar ao jogo</button>
+  </div>
+
 </div>
 
 <script>
 // =====================================================
-// ⚙️  CONFIGURAÇÃO DO SUPABASE — PREENCHA AQUI
+// ⚙️  CONFIGURAÇÃO DO SUPABASE
 // =====================================================
 const SUPABASE_URL = 'https://pigmqbcsswyzxumgkzae.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpZ21xYmNzc3d5enh1bWdremFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NjY4MzEsImV4cCI6MjA5NDQ0MjgzMX0.2fceyyXckxCsDJ3iex-2tvmniFSq_zjV-mbMJrD53Dg';
+const ADMIN_PASSWORD = 'bdleditor';
 // =====================================================
 
 const POLL_MS = 3000;
-
-const FAMOSOS = [
-  { name: 'Pelé', cat: 'Futebol' },
-  { name: 'Ronaldo Fenômeno', cat: 'Futebol' },
-  { name: 'Ronaldinho Gaúcho', cat: 'Futebol' },
-  { name: 'Neymar', cat: 'Futebol' },
-  { name: 'Messi', cat: 'Futebol' },
-  { name: 'Cristiano Ronaldo', cat: 'Futebol' },
-  { name: 'Zidane', cat: 'Futebol' },
-  { name: 'Romário', cat: 'Futebol' },
-  { name: 'Mbappé', cat: 'Futebol' },
-  { name: 'Vini Jr', cat: 'Futebol' },
-  { name: 'Haaland', cat: 'Futebol' },
-  { name: 'Michael Jackson', cat: 'Música' },
-  { name: 'Madonna', cat: 'Música' },
-  { name: 'Beyoncé', cat: 'Música' },
-  { name: 'Elvis Presley', cat: 'Música' },
-  { name: 'Freddie Mercury', cat: 'Música' },
-  { name: 'Lady Gaga', cat: 'Música' },
-  { name: 'Taylor Swift', cat: 'Música' },
-  { name: 'Eminem', cat: 'Música' },
-  { name: 'Rihanna', cat: 'Música' },
-  { name: 'The Weeknd', cat: 'Música' },
-  { name: 'Anitta', cat: 'Música' },
-  { name: 'Roberto Carlos', cat: 'Música' },
-  { name: 'Caetano Veloso', cat: 'Música' },
-  { name: 'Leonardo DiCaprio', cat: 'Cinema' },
-  { name: 'Brad Pitt', cat: 'Cinema' },
-  { name: 'Angelina Jolie', cat: 'Cinema' },
-  { name: 'Marilyn Monroe', cat: 'Cinema' },
-  { name: 'Tom Hanks', cat: 'Cinema' },
-  { name: 'Meryl Streep', cat: 'Cinema' },
-  { name: 'Will Smith', cat: 'Cinema' },
-  { name: 'Scarlett Johansson', cat: 'Cinema' },
-  { name: 'Johnny Depp', cat: 'Cinema' },
-  { name: 'Margot Robbie', cat: 'Cinema' },
-  { name: 'Dwayne Johnson', cat: 'Cinema' },
-  { name: 'Oprah Winfrey', cat: 'TV / Entretenimento' },
-  { name: 'MrBeast', cat: 'TV / Entretenimento' },
-  { name: 'Silvio Santos', cat: 'TV / Entretenimento' },
-  { name: 'Faustão', cat: 'TV / Entretenimento' },
-  { name: 'Xuxa', cat: 'TV / Entretenimento' },
-  { name: 'Usain Bolt', cat: 'Esportes' },
-  { name: 'Serena Williams', cat: 'Esportes' },
-  { name: 'Michael Jordan', cat: 'Esportes' },
-  { name: 'Muhammad Ali', cat: 'Esportes' },
-  { name: 'Roger Federer', cat: 'Esportes' },
-  { name: 'LeBron James', cat: 'Esportes' },
-  { name: 'Ayrton Senna', cat: 'Esportes' },
-  { name: 'Guga Kuerten', cat: 'Esportes' },
-  { name: 'Simone Biles', cat: 'Esportes' },
-  { name: 'Lewis Hamilton', cat: 'Esportes' },
-  { name: 'Barack Obama', cat: 'Política' },
-  { name: 'Lula', cat: 'Política' },
-  { name: 'Donald Trump', cat: 'Política' },
-  { name: 'Angela Merkel', cat: 'Política' },
-  { name: 'Nelson Mandela', cat: 'Política' },
-  { name: 'Vladimir Putin', cat: 'Política' },
-  { name: 'Elon Musk', cat: 'Tecnologia' },
-  { name: 'Bill Gates', cat: 'Tecnologia' },
-  { name: 'Steve Jobs', cat: 'Tecnologia' },
-  { name: 'Mark Zuckerberg', cat: 'Tecnologia' },
-  { name: 'Jeff Bezos', cat: 'Tecnologia' },
-  { name: 'Naruto', cat: 'Anime' },
-  { name: 'Goku', cat: 'Anime' },
-  { name: 'Luffy', cat: 'Anime' },
-  { name: 'Pikachu', cat: 'Games / Anime' },
-  { name: 'Mario', cat: 'Games' },
-  { name: 'Lara Croft', cat: 'Games' },
-  { name: 'Kratos', cat: 'Games' },
-  { name: 'Master Chief', cat: 'Games' },
-];
-
 let state = { roomCode: null, myName: null, isHost: false, pollTimer: null };
+let adminFilter = 'Todos';
+let allChars = [];
 
-// ─── Supabase helpers ───────────────────────────────────────────────────────
+// ─── Supabase helpers ────────────────────────────────────────────────────────
 
 async function sbFetch(path, options = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -542,10 +627,7 @@ async function sbFetch(path, options = {}) {
     },
     ...options,
   });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err);
-  }
+  if (!res.ok) throw new Error(await res.text());
   const text = await res.text();
   return text ? JSON.parse(text) : null;
 }
@@ -557,39 +639,57 @@ async function getRoom(code) {
 
 async function createRoomDB(code, hostName) {
   await sbFetch('rooms', {
-    method: 'POST',
-    prefer: 'return=minimal',
-    body: JSON.stringify({
-      code,
-      host: hostName,
-      players: [{ name: hostName }],
-      characters: {},
-      started: false,
-    }),
+    method: 'POST', prefer: 'return=minimal',
+    body: JSON.stringify({ code, host: hostName, players: [{ name: hostName }], characters: {}, started: false }),
   });
 }
 
 async function updateRoom(code, updates) {
   await sbFetch(`rooms?code=eq.${code}`, {
-    method: 'PATCH',
-    prefer: 'return=minimal',
+    method: 'PATCH', prefer: 'return=minimal',
     body: JSON.stringify(updates),
   });
 }
 
-// ─── Utilities ──────────────────────────────────────────────────────────────
+async function getAllCharacters() {
+  return await sbFetch('characters?select=*&order=category,name');
+}
+
+async function addCharacterDB(name, category) {
+  await sbFetch('characters', {
+    method: 'POST', prefer: 'return=minimal',
+    body: JSON.stringify({ name, category }),
+  });
+}
+
+async function deleteCharacterDB(id) {
+  await sbFetch(`characters?id=eq.${id}`, {
+    method: 'DELETE', prefer: 'return=minimal',
+  });
+}
+
+// ─── Utilities ───────────────────────────────────────────────────────────────
 
 function genCode() { return Math.random().toString(36).substring(2, 6).toUpperCase(); }
 function initials(n) { return n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase(); }
+
 function showError(id, msg) {
   const el = document.getElementById(id);
   el.textContent = msg; el.style.display = 'block';
   setTimeout(() => el.style.display = 'none', 4000);
 }
+function showSuccess(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
+}
+function setLoading(on) {
+  document.getElementById('loading-overlay').classList.toggle('hidden', !on);
 }
 function shuffle(arr) {
   const a = [...arr];
@@ -599,17 +699,18 @@ function shuffle(arr) {
   }
   return a;
 }
-function assignFamosos(players) {
-  const shuffled = shuffle(FAMOSOS);
+async function assignFamosos(players) {
+  const chars = await getAllCharacters();
+  const shuffled = shuffle(chars);
   const assigned = {};
-  players.forEach((p, i) => { assigned[p.name] = shuffled[i % shuffled.length]; });
+  players.forEach((p, i) => {
+    const c = shuffled[i % shuffled.length];
+    assigned[p.name] = { name: c.name, cat: c.category };
+  });
   return assigned;
 }
-function setLoading(on) {
-  document.getElementById('loading-overlay').classList.toggle('hidden', !on);
-}
 
-// ─── Actions ────────────────────────────────────────────────────────────────
+// ─── Game ────────────────────────────────────────────────────────────────────
 
 async function createRoom() {
   const name = document.getElementById('home-name').value.trim();
@@ -621,11 +722,9 @@ async function createRoom() {
     state = { roomCode: code, myName: name, isHost: true };
     enterLobby();
   } catch (e) {
-    showError('home-error', 'Erro ao criar sala. Verifique sua configuração do Supabase.');
+    showError('home-error', 'Erro ao criar sala. Tente novamente.');
     console.error(e);
-  } finally {
-    setLoading(false);
-  }
+  } finally { setLoading(false); }
 }
 
 async function joinRoom() {
@@ -640,17 +739,13 @@ async function joinRoom() {
     if (room.started) return showError('home-error', 'Esse jogo já começou.');
     if (room.players.find(p => p.name.toLowerCase() === name.toLowerCase()))
       return showError('home-error', 'Já existe alguém com esse nome na sala.');
-
-    const newPlayers = [...room.players, { name }];
-    await updateRoom(code, { players: newPlayers });
+    await updateRoom(code, { players: [...room.players, { name }] });
     state = { roomCode: code, myName: name, isHost: false };
     enterLobby();
   } catch (e) {
     showError('home-error', 'Erro ao entrar na sala.');
     console.error(e);
-  } finally {
-    setLoading(false);
-  }
+  } finally { setLoading(false); }
 }
 
 function enterLobby() {
@@ -658,13 +753,12 @@ function enterLobby() {
   document.getElementById('lobby-code').textContent = state.roomCode;
   document.getElementById('lobby-title').innerHTML = state.isHost ? 'Sala<br><span>Criada!</span>' : 'Você<br><span>Entrou!</span>';
   document.getElementById('lobby-tag').textContent = state.isHost ? 'Sala criada' : 'Na sala';
-  const link = window.location.origin + window.location.pathname + '?room=' + state.roomCode;
-  document.getElementById('share-link').value = link;
+  document.getElementById('share-link').value = window.location.origin + window.location.pathname + '?room=' + state.roomCode;
   document.getElementById('host-controls').style.display = state.isHost ? 'block' : 'none';
   document.getElementById('guest-waiting').style.display = state.isHost ? 'none' : 'block';
   clearInterval(state.pollTimer);
   state.pollTimer = setInterval(pollLobby, POLL_MS);
-  pollLobby(); // render immediately
+  pollLobby();
 }
 
 async function renderLobby() {
@@ -672,31 +766,22 @@ async function renderLobby() {
     const room = await getRoom(state.roomCode);
     if (!room) return;
     if (room.started) { clearInterval(state.pollTimer); return enterGame(room); }
-
     const ul = document.getElementById('lobby-players');
     ul.innerHTML = '';
     room.players.forEach(p => {
       const li = document.createElement('li');
       li.className = 'player-item';
-      const isHost = p.name === room.host;
-      const isMe = p.name === state.myName;
       li.innerHTML = `
         <div class="avatar">${initials(p.name)}</div>
         <span>${p.name}</span>
         <div class="ml-auto">
-          ${isHost ? '<span class="badge badge-host">host</span>' : ''}
-          ${isMe ? '<span class="badge badge-you">você</span>' : ''}
-        </div>
-      `;
+          ${p.name === room.host ? '<span class="badge badge-host">host</span>' : ''}
+          ${p.name === state.myName ? '<span class="badge badge-you">você</span>' : ''}
+        </div>`;
       ul.appendChild(li);
     });
-
-    if (state.isHost) {
-      document.getElementById('start-btn').disabled = room.players.length < 2;
-    }
-  } catch (e) {
-    console.error('Erro ao atualizar lobby:', e);
-  }
+    if (state.isHost) document.getElementById('start-btn').disabled = room.players.length < 2;
+  } catch (e) { console.error(e); }
 }
 
 async function startGame() {
@@ -705,16 +790,14 @@ async function startGame() {
     const room = await getRoom(state.roomCode);
     if (!room) return;
     if (room.players.length < 2) return showError('lobby-error', 'Precisa de pelo menos 2 jogadores.');
-    const characters = assignFamosos(room.players);
+    const characters = await assignFamosos(room.players);
     await updateRoom(state.roomCode, { characters, started: true });
     clearInterval(state.pollTimer);
     enterGame({ ...room, characters, started: true });
   } catch (e) {
     showError('lobby-error', 'Erro ao iniciar o jogo.');
     console.error(e);
-  } finally {
-    setLoading(false);
-  }
+  } finally { setLoading(false); }
 }
 
 function enterGame(room) {
@@ -733,19 +816,15 @@ function enterGame(room) {
         <div class="identity-player">${p.name} é...</div>
         <div class="identity-name-val">${famoso.name}</div>
         <span class="identity-cat">${famoso.cat}</span>
-      </div>
-    `;
+      </div>`;
     others.appendChild(card);
   });
 }
 
-async function pollLobby() {
-  await renderLobby();
-}
+async function pollLobby() { await renderLobby(); }
 
 function copyLink() {
-  const link = document.getElementById('share-link').value;
-  navigator.clipboard.writeText(link).catch(() => {});
+  navigator.clipboard.writeText(document.getElementById('share-link').value).catch(() => {});
   const btn = document.getElementById('copy-btn');
   btn.textContent = 'Copiado ✓';
   setTimeout(() => btn.textContent = 'Copiar link', 2000);
@@ -756,17 +835,106 @@ async function leaveGame() {
   try {
     if (!state.isHost) {
       const room = await getRoom(state.roomCode);
-      if (room) {
-        const newPlayers = room.players.filter(p => p.name !== state.myName);
-        await updateRoom(state.roomCode, { players: newPlayers });
-      }
+      if (room) await updateRoom(state.roomCode, { players: room.players.filter(p => p.name !== state.myName) });
     }
-  } catch (e) { /* silently ignore */ }
+  } catch (e) {}
   state = {};
   showScreen('screen-home');
 }
 
-// Auto-fill code from URL
+// ─── Admin ────────────────────────────────────────────────────────────────────
+
+function showAdminLogin() {
+  document.getElementById('admin-password').value = '';
+  showScreen('screen-admin-login');
+  setTimeout(() => document.getElementById('admin-password').focus(), 150);
+}
+
+function checkAdminPassword() {
+  if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
+    showScreen('screen-admin');
+    loadAdminCharacters();
+  } else {
+    showError('admin-login-error', 'Senha incorreta.');
+  }
+}
+
+async function loadAdminCharacters() {
+  setLoading(true);
+  try {
+    allChars = await getAllCharacters();
+    renderAdminCharacters();
+  } catch (e) {
+    console.error(e);
+  } finally { setLoading(false); }
+}
+
+function renderAdminCharacters() {
+  // Tabs
+  const categories = ['Todos', ...new Set(allChars.map(c => c.category))].sort((a, b) => a === 'Todos' ? -1 : a.localeCompare(b));
+  const tabsEl = document.getElementById('admin-cat-tabs');
+  tabsEl.innerHTML = '';
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-tab' + (cat === adminFilter ? ' active' : '');
+    btn.textContent = cat === 'Todos' ? `Todos (${allChars.length})` : cat;
+    btn.onclick = () => { adminFilter = cat; renderAdminCharacters(); };
+    tabsEl.appendChild(btn);
+  });
+
+  // List
+  const filtered = adminFilter === 'Todos' ? allChars : allChars.filter(c => c.category === adminFilter);
+  document.getElementById('char-count').textContent = `${filtered.length} personagem${filtered.length !== 1 ? 's' : ''}`;
+
+  const ul = document.getElementById('admin-char-list');
+  ul.innerHTML = '';
+  filtered.forEach((c, idx) => {
+    const li = document.createElement('li');
+    li.className = 'char-item';
+    li.style.animationDelay = (idx * 0.015) + 's';
+    const safeName = c.name.replace(/'/g, "\\'");
+    li.innerHTML = `
+      <span class="char-name">${c.name}</span>
+      <span class="char-cat">${c.category}</span>
+      <div class="ml-auto">
+        <button class="btn btn-danger btn-sm" onclick="deleteCharacter(${c.id}, '${safeName}')">Remover</button>
+      </div>`;
+    ul.appendChild(li);
+  });
+}
+
+async function addCharacter() {
+  const name = document.getElementById('new-char-name').value.trim();
+  const category = document.getElementById('new-char-cat').value.trim();
+  if (!name) return showError('admin-add-error', 'Digite o nome do personagem.');
+  if (!category) return showError('admin-add-error', 'Digite a categoria.');
+  setLoading(true);
+  try {
+    await addCharacterDB(name, category);
+    document.getElementById('new-char-name').value = '';
+    document.getElementById('new-char-cat').value = '';
+    document.getElementById('new-char-name').focus();
+    showSuccess('admin-add-success', `"${name}" adicionado!`);
+    adminFilter = category; // switch to the category just added
+    await loadAdminCharacters();
+  } catch (e) {
+    showError('admin-add-error', 'Erro ao adicionar. Tente novamente.');
+    console.error(e);
+  } finally { setLoading(false); }
+}
+
+async function deleteCharacter(id, name) {
+  if (!confirm(`Remover "${name}" da lista?`)) return;
+  setLoading(true);
+  try {
+    await deleteCharacterDB(id);
+    await loadAdminCharacters();
+  } catch (e) { console.error(e); }
+  finally { setLoading(false); }
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
 const params = new URLSearchParams(window.location.search);
 if (params.get('room')) document.getElementById('home-code').value = params.get('room');
 </script>
