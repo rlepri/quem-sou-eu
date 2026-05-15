@@ -41,7 +41,6 @@
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* header */
     .header { margin-bottom: 2.5rem; animation: fadeUp 0.5s ease both; }
     .header-tag {
       display: inline-block;
@@ -67,7 +66,6 @@
     h1 span { color: var(--accent); }
     .subtitle { font-size: 14px; color: var(--muted); margin-top: 0.5rem; line-height: 1.6; }
 
-    /* card */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -159,7 +157,6 @@
       border: 1px solid rgba(255,87,87,0.2);
     }
 
-    /* code display */
     .code-display {
       font-family: 'Syne', sans-serif;
       font-size: 3rem;
@@ -178,7 +175,6 @@
     .share-row input { margin-bottom: 0; flex: 1; font-size: 12px; color: var(--muted); }
     .share-row .btn { width: auto; margin-bottom: 0; padding: 12px 16px; font-size: 13px; white-space: nowrap; }
 
-    /* section label */
     .section-label {
       font-size: 11px;
       font-weight: 600;
@@ -189,7 +185,6 @@
       margin-top: 1.5rem;
     }
 
-    /* player list */
     .player-list { list-style: none; }
     .player-item {
       display: flex;
@@ -223,7 +218,6 @@
     .badge-you { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
     .ml-auto { margin-left: auto; display: flex; gap: 6px; }
 
-    /* info box */
     .info-box {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -259,7 +253,6 @@
       animation: pulse 1.4s infinite;
     }
 
-    /* identity cards */
     .mystery-card {
       background: var(--surface);
       border: 1px dashed var(--border2);
@@ -328,6 +321,26 @@
     }
     .back-btn:hover { color: var(--text); }
 
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13,13,15,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+    .loading-overlay.hidden { display: none; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
@@ -335,9 +348,17 @@
     @keyframes pulse {
       0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
     }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+
+<div class="loading-overlay hidden" id="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
 <div class="container">
 
   <!-- HOME -->
@@ -345,7 +366,7 @@
     <div class="header">
       <div class="header-tag">Multiplayer</div>
       <h1>Quem<br><span>Sou Eu?</span></h1>
-      <p class="subtitle">Crie uma sala, mande o código pros amigos no Discord e descubra quem você é!</p>
+      <p class="subtitle">Crie uma sala, mande o link pros amigos no Discord e descubra quem você é!</p>
     </div>
     <div class="card">
       <label>Seu nome</label>
@@ -364,7 +385,7 @@
     <div class="header">
       <div class="header-tag" id="lobby-tag">Sala criada</div>
       <h1 id="lobby-title">Sala<br><span>Criada!</span></h1>
-      <p class="subtitle">Compartilhe o código abaixo com seus amigos no Discord</p>
+      <p class="subtitle">Compartilhe o link abaixo com seus amigos no Discord</p>
     </div>
 
     <div class="code-display" id="lobby-code"></div>
@@ -425,8 +446,14 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'whoami_rooms_v2';
-const POLL_MS = 2000;
+// =====================================================
+// ⚙️  CONFIGURAÇÃO DO SUPABASE — PREENCHA AQUI
+// =====================================================
+const SUPABASE_URL = 'https://pigmqbcsswyzxumgkzae.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpZ21xYmNzc3d5enh1bWdremFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NjY4MzEsImV4cCI6MjA5NDQ0MjgzMX0.2fceyyXckxCsDJ3iex-2tvmniFSq_zjV-mbMJrD53Dg';
+// =====================================================
+
+const POLL_MS = 3000;
 
 const FAMOSOS = [
   { name: 'Pelé', cat: 'Futebol' },
@@ -502,11 +529,58 @@ const FAMOSOS = [
 
 let state = { roomCode: null, myName: null, isHost: false, pollTimer: null };
 
-function getRooms() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
-function saveRooms(r) { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); }
+// ─── Supabase helpers ───────────────────────────────────────────────────────
+
+async function sbFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || '',
+      ...options.headers,
+    },
+    ...options,
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function getRoom(code) {
+  const rows = await sbFetch(`rooms?code=eq.${code}&select=*`);
+  return rows && rows.length > 0 ? rows[0] : null;
+}
+
+async function createRoomDB(code, hostName) {
+  await sbFetch('rooms', {
+    method: 'POST',
+    prefer: 'return=minimal',
+    body: JSON.stringify({
+      code,
+      host: hostName,
+      players: [{ name: hostName }],
+      characters: {},
+      started: false,
+    }),
+  });
+}
+
+async function updateRoom(code, updates) {
+  await sbFetch(`rooms?code=eq.${code}`, {
+    method: 'PATCH',
+    prefer: 'return=minimal',
+    body: JSON.stringify(updates),
+  });
+}
+
+// ─── Utilities ──────────────────────────────────────────────────────────────
+
 function genCode() { return Math.random().toString(36).substring(2, 6).toUpperCase(); }
 function initials(n) { return n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase(); }
-
 function showError(id, msg) {
   const el = document.getElementById(id);
   el.textContent = msg; el.style.display = 'block';
@@ -531,32 +605,52 @@ function assignFamosos(players) {
   players.forEach((p, i) => { assigned[p.name] = shuffled[i % shuffled.length]; });
   return assigned;
 }
-
-function createRoom() {
-  const name = document.getElementById('home-name').value.trim();
-  if (!name) return showError('home-error', 'Digite seu nome primeiro.');
-  const code = genCode();
-  const rooms = getRooms();
-  rooms[code] = { host: name, players: [{ name }], characters: {}, started: false, createdAt: Date.now() };
-  saveRooms(rooms);
-  state = { roomCode: code, myName: name, isHost: true };
-  enterLobby();
+function setLoading(on) {
+  document.getElementById('loading-overlay').classList.toggle('hidden', !on);
 }
 
-function joinRoom() {
+// ─── Actions ────────────────────────────────────────────────────────────────
+
+async function createRoom() {
+  const name = document.getElementById('home-name').value.trim();
+  if (!name) return showError('home-error', 'Digite seu nome primeiro.');
+  setLoading(true);
+  try {
+    const code = genCode();
+    await createRoomDB(code, name);
+    state = { roomCode: code, myName: name, isHost: true };
+    enterLobby();
+  } catch (e) {
+    showError('home-error', 'Erro ao criar sala. Verifique sua configuração do Supabase.');
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function joinRoom() {
   const name = document.getElementById('home-name').value.trim();
   const code = document.getElementById('home-code').value.trim().toUpperCase();
   if (!name) return showError('home-error', 'Digite seu nome primeiro.');
   if (code.length < 2) return showError('home-error', 'Digite o código da sala.');
-  const rooms = getRooms();
-  const room = rooms[code];
-  if (!room) return showError('home-error', 'Sala não encontrada. Verifique o código.');
-  if (room.started) return showError('home-error', 'Esse jogo já começou.');
-  if (room.players.find(p => p.name.toLowerCase() === name.toLowerCase())) return showError('home-error', 'Já existe alguém com esse nome na sala.');
-  room.players.push({ name });
-  saveRooms(rooms);
-  state = { roomCode: code, myName: name, isHost: false };
-  enterLobby();
+  setLoading(true);
+  try {
+    const room = await getRoom(code);
+    if (!room) return showError('home-error', 'Sala não encontrada. Verifique o código.');
+    if (room.started) return showError('home-error', 'Esse jogo já começou.');
+    if (room.players.find(p => p.name.toLowerCase() === name.toLowerCase()))
+      return showError('home-error', 'Já existe alguém com esse nome na sala.');
+
+    const newPlayers = [...room.players, { name }];
+    await updateRoom(code, { players: newPlayers });
+    state = { roomCode: code, myName: name, isHost: false };
+    enterLobby();
+  } catch (e) {
+    showError('home-error', 'Erro ao entrar na sala.');
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
 }
 
 function enterLobby() {
@@ -568,58 +662,63 @@ function enterLobby() {
   document.getElementById('share-link').value = link;
   document.getElementById('host-controls').style.display = state.isHost ? 'block' : 'none';
   document.getElementById('guest-waiting').style.display = state.isHost ? 'none' : 'block';
-  renderLobby();
   clearInterval(state.pollTimer);
   state.pollTimer = setInterval(pollLobby, POLL_MS);
+  pollLobby(); // render immediately
 }
 
-function renderLobby() {
-  const rooms = getRooms();
-  const room = rooms[state.roomCode];
-  if (!room) return;
-  if (room.started) { clearInterval(state.pollTimer); return enterGame(); }
+async function renderLobby() {
+  try {
+    const room = await getRoom(state.roomCode);
+    if (!room) return;
+    if (room.started) { clearInterval(state.pollTimer); return enterGame(room); }
 
-  const ul = document.getElementById('lobby-players');
-  ul.innerHTML = '';
-  room.players.forEach(p => {
-    const li = document.createElement('li');
-    li.className = 'player-item';
-    const isHost = p.name === room.host;
-    const isMe = p.name === state.myName;
-    li.innerHTML = `
-      <div class="avatar">${initials(p.name)}</div>
-      <span>${p.name}</span>
-      <div class="ml-auto">
-        ${isHost ? '<span class="badge badge-host">host</span>' : ''}
-        ${isMe ? '<span class="badge badge-you">você</span>' : ''}
-      </div>
-    `;
-    ul.appendChild(li);
-  });
+    const ul = document.getElementById('lobby-players');
+    ul.innerHTML = '';
+    room.players.forEach(p => {
+      const li = document.createElement('li');
+      li.className = 'player-item';
+      const isHost = p.name === room.host;
+      const isMe = p.name === state.myName;
+      li.innerHTML = `
+        <div class="avatar">${initials(p.name)}</div>
+        <span>${p.name}</span>
+        <div class="ml-auto">
+          ${isHost ? '<span class="badge badge-host">host</span>' : ''}
+          ${isMe ? '<span class="badge badge-you">você</span>' : ''}
+        </div>
+      `;
+      ul.appendChild(li);
+    });
 
-  if (state.isHost) {
-    document.getElementById('start-btn').disabled = room.players.length < 2;
+    if (state.isHost) {
+      document.getElementById('start-btn').disabled = room.players.length < 2;
+    }
+  } catch (e) {
+    console.error('Erro ao atualizar lobby:', e);
   }
 }
 
-function startGame() {
-  const rooms = getRooms();
-  const room = rooms[state.roomCode];
-  if (!room) return;
-  if (room.players.length < 2) return showError('lobby-error', 'Precisa de pelo menos 2 jogadores.');
-  room.characters = assignFamosos(room.players);
-  room.started = true;
-  saveRooms(rooms);
-  clearInterval(state.pollTimer);
-  enterGame();
+async function startGame() {
+  setLoading(true);
+  try {
+    const room = await getRoom(state.roomCode);
+    if (!room) return;
+    if (room.players.length < 2) return showError('lobby-error', 'Precisa de pelo menos 2 jogadores.');
+    const characters = assignFamosos(room.players);
+    await updateRoom(state.roomCode, { characters, started: true });
+    clearInterval(state.pollTimer);
+    enterGame({ ...room, characters, started: true });
+  } catch (e) {
+    showError('lobby-error', 'Erro ao iniciar o jogo.');
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
 }
 
-function enterGame() {
+function enterGame(room) {
   showScreen('screen-game');
-  const rooms = getRooms();
-  const room = rooms[state.roomCode];
-  if (!room) return;
-
   const others = document.getElementById('others-list');
   others.innerHTML = '';
   room.players.forEach((p, idx) => {
@@ -640,12 +739,8 @@ function enterGame() {
   });
 }
 
-function pollLobby() {
-  const rooms = getRooms();
-  const room = rooms[state.roomCode];
-  if (!room) return;
-  if (room.started) { clearInterval(state.pollTimer); return enterGame(); }
-  renderLobby();
+async function pollLobby() {
+  await renderLobby();
 }
 
 function copyLink() {
@@ -656,19 +751,22 @@ function copyLink() {
   setTimeout(() => btn.textContent = 'Copiar link', 2000);
 }
 
-function leaveGame() {
+async function leaveGame() {
   clearInterval(state.pollTimer);
-  const rooms = getRooms();
-  const room = rooms[state.roomCode];
-  if (room && !state.isHost) {
-    room.players = room.players.filter(p => p.name !== state.myName);
-    saveRooms(rooms);
-  }
+  try {
+    if (!state.isHost) {
+      const room = await getRoom(state.roomCode);
+      if (room) {
+        const newPlayers = room.players.filter(p => p.name !== state.myName);
+        await updateRoom(state.roomCode, { players: newPlayers });
+      }
+    }
+  } catch (e) { /* silently ignore */ }
   state = {};
   showScreen('screen-home');
 }
 
-// auto-fill code from URL
+// Auto-fill code from URL
 const params = new URLSearchParams(window.location.search);
 if (params.get('room')) document.getElementById('home-code').value = params.get('room');
 </script>
