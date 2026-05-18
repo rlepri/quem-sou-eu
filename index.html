@@ -492,6 +492,10 @@
 
     <div class="cat-tabs" id="admin-cat-tabs"></div>
 
+    <button id="delete-cat-btn" class="btn btn-danger" style="display:none; align-items:center; justify-content:center; gap:8px; margin-bottom:0.75rem;">
+      🗑 Deletar categoria inteira
+    </button>
+
     <div class="card" style="padding: 0 1.5rem;">
       <p class="char-count" id="char-count"></p>
       <ul class="char-list" id="admin-char-list"></ul>
@@ -949,6 +953,15 @@ function renderAdminCharacters() {
   const filtered = adminFilter === 'Todos' ? grpChars : grpChars.filter(c => c.category === adminFilter);
   document.getElementById('char-count').textContent = `${filtered.length} personagem${filtered.length !== 1 ? 's' : ''}`;
 
+  // Show delete category button when a specific category is selected
+  const delCatBtn = document.getElementById('delete-cat-btn');
+  if (adminFilter !== 'Todos') {
+    delCatBtn.style.display = 'flex';
+    delCatBtn.onclick = () => deleteCategory(adminFilter, filtered.length);
+  } else {
+    delCatBtn.style.display = 'none';
+  }
+
   const ul = document.getElementById('admin-char-list');
   ul.innerHTML = '';
   filtered.forEach((c, idx) => {
@@ -997,6 +1010,21 @@ async function deleteCharacter(id, name) {
     await loadAdminCharacters();
   } catch (e) { console.error(e); }
   finally { setLoading(false); }
+}
+
+async function deleteCategory(category, count) {
+  if (!confirm(`Deletar a categoria "${category}" e todos os seus ${count} personagens? Essa ação não pode ser desfeita.`)) return;
+  setLoading(true);
+  try {
+    // Delete all characters in this category
+    await sbFetch(`characters?category=eq.${encodeURIComponent(category)}&grp=eq.${adminGrp}`, {
+      method: 'DELETE', prefer: 'return=minimal',
+    });
+    adminFilter = 'Todos';
+    await loadAdminCharacters();
+  } catch (e) {
+    console.error(e);
+  } finally { setLoading(false); }
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
