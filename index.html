@@ -22,6 +22,8 @@
       --accent-text: #0d0d0f;
       --danger: #ff5757;
       --danger-dim: rgba(255,87,87,0.1);
+      --purple: #a78bfa;
+      --purple-dim: rgba(167,139,250,0.12);
       --radius: 14px;
       --radius-sm: 8px;
     }
@@ -38,7 +40,6 @@
     }
 
     .container { width: 100%; max-width: 500px; }
-
     .screen { display: none; }
     .screen.active { display: block; }
 
@@ -46,23 +47,16 @@
     .header-tag {
       display: inline-block;
       font-family: 'Syne', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: var(--accent-dim);
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-dim);
       border: 1px solid rgba(200,255,87,0.2);
-      border-radius: 999px;
-      padding: 4px 12px;
-      margin-bottom: 1rem;
+      border-radius: 999px; padding: 4px 12px; margin-bottom: 1rem;
     }
     h1 {
       font-family: 'Syne', sans-serif;
       font-size: clamp(2rem, 8vw, 3rem);
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -1px;
+      font-weight: 800; line-height: 1.05; letter-spacing: -1px;
     }
     h1 span { color: var(--accent); }
     .subtitle { font-size: 14px; color: var(--muted); margin-top: 0.5rem; line-height: 1.6; }
@@ -71,130 +65,69 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
+      padding: 1.5rem; margin-bottom: 1rem;
       animation: fadeUp 0.5s ease both;
     }
 
     label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--muted);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+      display: block; font-size: 12px; font-weight: 500;
+      color: var(--muted); letter-spacing: 0.5px;
+      text-transform: uppercase; margin-bottom: 8px;
     }
 
     input[type=text], input[type=password] {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      padding: 12px 14px;
-      margin-bottom: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: 15px; padding: 12px 14px; margin-bottom: 1rem;
+      outline: none; transition: border-color 0.2s;
     }
     input[type=text]:focus, input[type=password]:focus { border-color: var(--accent); }
     input[type=text]::placeholder, input[type=password]::placeholder { color: var(--muted); }
 
     .btn {
-      display: block;
-      width: 100%;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 13px 20px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border2);
-      background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      margin-bottom: 0.6rem;
+      display: block; width: 100%;
+      font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+      padding: 13px 20px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border2); background: transparent; color: var(--text);
+      cursor: pointer; margin-bottom: 0.6rem;
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
       letter-spacing: 0.3px;
     }
     .btn:hover { background: var(--surface2); }
     .btn:active { transform: scale(0.98); }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--accent-text);
-      border-color: transparent;
-    }
+    .btn-primary { background: var(--accent); color: var(--accent-text); border-color: transparent; }
     .btn-primary:hover { background: #d4ff6a; }
     .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
-
-    .btn-danger {
-      background: var(--danger-dim);
-      color: var(--danger);
-      border-color: rgba(255,87,87,0.2);
-    }
+    .btn-danger { background: var(--danger-dim); color: var(--danger); border-color: rgba(255,87,87,0.2); }
     .btn-danger:hover { background: rgba(255,87,87,0.18); }
-
-    .btn-sm {
-      width: auto;
-      padding: 6px 14px;
-      font-size: 12px;
-      margin-bottom: 0;
-    }
+    .btn-sm { width: auto; padding: 6px 14px; font-size: 12px; margin-bottom: 0; }
 
     .divider {
-      text-align: center;
-      font-size: 12px;
-      color: var(--muted);
-      margin: 1.2rem 0;
-      position: relative;
+      text-align: center; font-size: 12px; color: var(--muted);
+      margin: 1.2rem 0; position: relative;
     }
     .divider::before, .divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 38%;
-      height: 1px;
-      background: var(--border);
+      content: ''; position: absolute; top: 50%; width: 38%; height: 1px; background: var(--border);
     }
-    .divider::before { left: 0; }
-    .divider::after { right: 0; }
+    .divider::before { left: 0; } .divider::after { right: 0; }
 
     .error {
-      font-size: 13px;
-      color: var(--danger);
-      margin-top: 0.5rem;
-      display: none;
-      padding: 8px 12px;
-      background: var(--danger-dim);
-      border-radius: var(--radius-sm);
+      font-size: 13px; color: var(--danger); margin-top: 0.5rem; display: none;
+      padding: 8px 12px; background: var(--danger-dim); border-radius: var(--radius-sm);
       border: 1px solid rgba(255,87,87,0.2);
     }
-
     .success-msg {
-      font-size: 13px;
-      color: var(--accent);
-      margin-top: 0.5rem;
-      display: none;
-      padding: 8px 12px;
-      background: var(--accent-dim);
-      border-radius: var(--radius-sm);
+      font-size: 13px; color: var(--accent); margin-top: 0.5rem; display: none;
+      padding: 8px 12px; background: var(--accent-dim); border-radius: var(--radius-sm);
       border: 1px solid rgba(200,255,87,0.2);
     }
 
     .code-display {
-      font-family: 'Syne', sans-serif;
-      font-size: 3rem;
-      font-weight: 800;
-      letter-spacing: 10px;
-      text-align: center;
-      color: var(--accent);
-      padding: 1.5rem;
-      background: var(--accent-dim);
-      border: 1px solid rgba(200,255,87,0.2);
-      border-radius: var(--radius);
-      margin-bottom: 1rem;
+      font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
+      letter-spacing: 10px; text-align: center; color: var(--accent);
+      padding: 1.5rem; background: var(--accent-dim);
+      border: 1px solid rgba(200,255,87,0.2); border-radius: var(--radius); margin-bottom: 1rem;
     }
 
     .share-row { display: flex; gap: 8px; margin-bottom: 1.25rem; }
@@ -202,268 +135,195 @@
     .share-row .btn { width: auto; margin-bottom: 0; padding: 12px 16px; font-size: 13px; white-space: nowrap; }
 
     .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 0.75rem;
-      margin-top: 1.5rem;
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1.5px;
+      margin-bottom: 0.75rem; margin-top: 1.5rem;
     }
 
     .player-list { list-style: none; }
     .player-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;
     }
     .player-item:last-child { border-bottom: none; }
     .avatar {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      background: var(--accent-dim);
-      border: 1px solid rgba(200,255,87,0.2);
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--accent-dim); border: 1px solid rgba(200,255,87,0.2);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-size: 11px; font-weight: 700;
-      color: var(--accent);
-      flex-shrink: 0;
+      font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+      color: var(--accent); flex-shrink: 0;
     }
     .badge {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 999px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+      font-size: 10px; font-weight: 600; padding: 2px 8px;
+      border-radius: 999px; letter-spacing: 0.5px; text-transform: uppercase;
     }
     .badge-host { background: rgba(200,255,87,0.12); color: var(--accent); border: 1px solid rgba(200,255,87,0.2); }
     .badge-you { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
     .ml-auto { margin-left: auto; display: flex; gap: 6px; align-items: center; }
 
-    .info-box {
+    /* ── Mode selector ── */
+    .mode-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 0; }
+    .mode-option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
       background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
     }
-    .cat-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.75rem; }
-    .cat-pill {
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--border2);
-      color: var(--muted);
+    .mode-option:hover { border-color: var(--border2); }
+    .mode-option.selected-padrao { border-color: var(--accent); background: var(--accent-dim); }
+    .mode-option.selected-full { border-color: var(--purple); background: var(--purple-dim); }
+    .mode-radio {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid var(--border2); flex-shrink: 0; margin-top: 2px;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s;
     }
+    .mode-option.selected-padrao .mode-radio { border-color: var(--accent); }
+    .mode-option.selected-full .mode-radio { border-color: var(--purple); }
+    .mode-radio-dot {
+      width: 8px; height: 8px; border-radius: 50%; display: none;
+    }
+    .mode-option.selected-padrao .mode-radio-dot { display: block; background: var(--accent); }
+    .mode-option.selected-full .mode-radio-dot { display: block; background: var(--purple); }
+    .mode-label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; }
+    .mode-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Category pills (selectable) ── */
+    .cat-select-area { margin-top: 1rem; animation: fadeUp 0.3s ease both; }
+    .cat-select-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+    .cat-pills-select { display: flex; flex-wrap: wrap; gap: 7px; }
+    .cat-pill-btn {
+      font-size: 12px; padding: 5px 13px; border-radius: 999px;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .cat-pill-btn:hover { border-color: var(--border2); color: var(--text); }
+    .cat-pill-btn.active-padrao { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,255,87,0.35); }
+    .cat-pill-btn.active-full { background: var(--purple-dim); color: var(--purple); border-color: rgba(167,139,250,0.35); }
+    .cat-select-hint { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
     .waiting-msg {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--muted);
-      font-size: 14px;
+      text-align: center; padding: 2rem 1rem; color: var(--muted); font-size: 14px;
     }
     .waiting-dot {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin-right: 8px;
-      animation: pulse 1.4s infinite;
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); margin-right: 8px; animation: pulse 1.4s infinite;
     }
 
     .mystery-card {
-      background: var(--surface);
-      border: 1px dashed var(--border2);
-      border-radius: var(--radius);
-      padding: 2rem;
-      text-align: center;
-      margin-bottom: 0.75rem;
+      background: var(--surface); border: 1px dashed var(--border2);
+      border-radius: var(--radius); padding: 2rem; text-align: center; margin-bottom: 0.75rem;
     }
     .mystery-marks {
-      font-family: 'Syne', sans-serif;
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: 10px;
-      color: var(--muted);
-      opacity: 0.4;
+      font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800;
+      letter-spacing: 10px; color: var(--muted); opacity: 0.4;
     }
     .mystery-hint { font-size: 13px; color: var(--muted); margin-top: 0.75rem; }
 
     .identity-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem; margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 1rem;
       animation: fadeUp 0.4s ease both;
     }
     .identity-avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: var(--surface2);
+      width: 40px; height: 40px; border-radius: 50%; background: var(--surface2);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-size: 13px; font-weight: 700;
-      color: var(--muted);
-      flex-shrink: 0;
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+      color: var(--muted); flex-shrink: 0;
     }
     .identity-info { flex: 1; }
     .identity-player { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
     .identity-name-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
     .identity-cat {
-      display: inline-block;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--accent-dim);
-      color: var(--accent);
-      border: 1px solid rgba(200,255,87,0.15);
-      margin-top: 4px;
+      display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: var(--accent-dim); color: var(--accent);
+      border: 1px solid rgba(200,255,87,0.15); margin-top: 4px;
     }
 
     .back-btn {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      cursor: pointer;
-      padding: 0;
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      background: transparent; border: none; color: var(--muted);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer;
+      padding: 0; margin-top: 1rem; display: flex; align-items: center; gap: 6px;
     }
     .back-btn:hover { color: var(--text); }
 
-    /* Admin link */
-    .admin-link {
-      text-align: center;
-      margin-top: 2rem;
-    }
+    /* Admin */
+    .admin-link { text-align: center; margin-top: 2rem; }
     .admin-link button {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 12px;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      opacity: 0.4;
-      transition: opacity 0.2s;
+      background: none; border: none; color: var(--muted); font-size: 12px;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; opacity: 0.4; transition: opacity 0.2s;
     }
     .admin-link button:hover { opacity: 1; }
 
-    /* Admin character list */
     .char-list { list-style: none; }
     .char-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;
       animation: fadeUp 0.3s ease both;
     }
     .char-item:last-child { border-bottom: none; }
     .char-name { flex: 1; font-weight: 500; }
     .char-cat {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--surface2);
-      color: var(--muted);
-      border: 1px solid var(--border2);
-      white-space: nowrap;
+      font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); white-space: nowrap;
     }
+    .char-grp {
+      font-size: 10px; padding: 2px 7px; border-radius: 999px; white-space: nowrap;
+    }
+    .grp-padrao { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(200,255,87,0.2); }
+    .grp-full { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
 
-    /* Add form */
-    .add-form {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 0.5rem;
-      flex-wrap: wrap;
+    .add-form { display: flex; gap: 8px; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .add-form input { margin-bottom: 0; flex: 1; min-width: 100px; }
+    .add-form select {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+      padding: 12px 10px; outline: none; cursor: pointer;
     }
-    .add-form input { margin-bottom: 0; flex: 1; min-width: 120px; }
     .add-form .btn { width: auto; margin-bottom: 0; padding: 12px 16px; white-space: nowrap; }
 
-    /* Category filter tabs */
-    .cat-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 1rem;
+    .admin-grp-tabs { display: flex; gap: 6px; margin-bottom: 0.75rem; }
+    .admin-grp-tab {
+      font-size: 12px; padding: 5px 14px; border-radius: 999px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; border: 1px solid var(--border2);
+      background: var(--surface2); color: var(--muted); transition: all 0.15s;
     }
+    .admin-grp-tab.active-padrao { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,255,87,0.3); }
+    .admin-grp-tab.active-full { background: var(--purple-dim); color: var(--purple); border-color: rgba(167,139,250,0.3); }
+
+    .cat-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
     .cat-tab {
-      font-size: 11px;
-      padding: 4px 12px;
-      border-radius: 999px;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      color: var(--muted);
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      transition: all 0.15s;
+      font-size: 11px; padding: 4px 12px; border-radius: 999px;
+      background: var(--surface2); border: 1px solid var(--border2); color: var(--muted);
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
     }
-    .cat-tab.active {
-      background: var(--accent-dim);
-      color: var(--accent);
-      border-color: rgba(200,255,87,0.3);
-    }
+    .cat-tab.active { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,255,87,0.3); }
+    .cat-tab.active-full { background: var(--purple-dim); color: var(--purple); border-color: rgba(167,139,250,0.3); }
 
-    .char-count {
-      font-size: 12px;
-      color: var(--muted);
-      padding: 0.75rem 0 0.25rem;
-    }
+    .char-count { font-size: 12px; color: var(--muted); padding: 0.75rem 0 0.25rem; }
 
-    /* Loading */
     .loading-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(13,13,15,0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      backdrop-filter: blur(4px);
+      position: fixed; inset: 0; background: rgba(13,13,15,0.85);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; backdrop-filter: blur(4px);
     }
     .loading-overlay.hidden { display: none; }
     .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid var(--border2);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      width: 36px; height: 36px; border: 3px solid var(--border2);
+      border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite;
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-<div class="loading-overlay hidden" id="loading-overlay">
-  <div class="spinner"></div>
-</div>
+<div class="loading-overlay hidden" id="loading-overlay"><div class="spinner"></div></div>
 
 <div class="container">
 
@@ -480,13 +340,12 @@
       <button class="btn btn-primary" onclick="createRoom()">✦ Criar sala</button>
       <div class="divider">ou entre em uma sala</div>
       <label>Código da sala</label>
-      <input type="text" id="home-code" placeholder="Ex: AB12" maxlength="4" style="text-transform:uppercase; letter-spacing:4px; font-family:'Syne',sans-serif; font-weight:700;" />
+      <input type="text" id="home-code" placeholder="Ex: AB12" maxlength="4"
+        style="text-transform:uppercase;letter-spacing:4px;font-family:'Syne',sans-serif;font-weight:700;" />
       <button class="btn" onclick="joinRoom()">Entrar na sala →</button>
     </div>
     <p class="error" id="home-error"></p>
-    <div class="admin-link">
-      <button onclick="showAdminLogin()">⚙ admin</button>
-    </div>
+    <div class="admin-link"><button onclick="showAdminLogin()">⚙ admin</button></div>
   </div>
 
   <!-- LOBBY -->
@@ -498,7 +357,6 @@
     </div>
 
     <div class="code-display" id="lobby-code"></div>
-
     <div class="share-row">
       <input type="text" id="share-link" readonly />
       <button class="btn" onclick="copyLink()" id="copy-btn">Copiar link</button>
@@ -510,19 +368,47 @@
     </div>
 
     <div id="host-controls" style="display:none">
-      <div class="info-box">
-        O sistema sorteia automaticamente um famoso diferente para cada jogador. Ninguém saberá quem é o seu!
-        <div class="cat-pills">
-          <span class="cat-pill">⚽ Futebol</span>
-          <span class="cat-pill">🎵 Música</span>
-          <span class="cat-pill">🎬 Cinema</span>
-          <span class="cat-pill">📺 TV</span>
-          <span class="cat-pill">🏆 Esportes</span>
-          <span class="cat-pill">🌎 Política</span>
-          <span class="cat-pill">💻 Tecnologia</span>
-          <span class="cat-pill">🎮 Games/Anime</span>
+      <div class="section-label">Modo de jogo</div>
+      <div class="card" style="padding: 1.25rem;">
+        <div class="mode-options">
+
+          <!-- Opção 1: Padrão completo -->
+          <div class="mode-option selected-padrao" id="mode-opt-all" onclick="selectMode('all')">
+            <div class="mode-radio"><div class="mode-radio-dot"></div></div>
+            <div>
+              <div class="mode-label">Categorias padrão</div>
+              <div class="mode-desc">Todas as categorias gerais — ótimo para grupos mistos</div>
+            </div>
+          </div>
+
+          <!-- Opção 2: Selecionar padrão -->
+          <div class="mode-option" id="mode-opt-pick" onclick="selectMode('pick')">
+            <div class="mode-radio"><div class="mode-radio-dot"></div></div>
+            <div>
+              <div class="mode-label">Selecionar categorias padrão</div>
+              <div class="mode-desc">Escolha quais categorias gerais entram no sorteio</div>
+            </div>
+          </div>
+
+          <!-- Opção 3: Especialistas -->
+          <div class="mode-option" id="mode-opt-full" onclick="selectMode('full')">
+            <div class="mode-radio"><div class="mode-radio-dot"></div></div>
+            <div>
+              <div class="mode-label" style="color:var(--purple)">Categoria de especialistas ✦</div>
+              <div class="mode-desc">Categorias profundas — para quem manja do assunto</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Área de seleção de categorias (aparece nos modos pick e full) -->
+        <div class="cat-select-area" id="cat-select-area" style="display:none">
+          <div class="cat-select-label" id="cat-select-label">Selecione as categorias</div>
+          <div class="cat-pills-select" id="cat-pills-select"></div>
+          <div class="cat-select-hint" id="cat-select-hint"></div>
         </div>
       </div>
+
       <button class="btn btn-primary" onclick="startGame()" id="start-btn" disabled>Sortear e iniciar o jogo ✦</button>
       <p class="error" id="lobby-error"></p>
     </div>
@@ -550,7 +436,7 @@
     <div id="others-list"></div>
 
     <div id="host-game-controls" style="display:none; margin-top: 1.5rem;">
-      <button class="btn" onclick="reshuffleGame()" style="border-color: rgba(200,255,87,0.3); color: var(--accent);">↺ Novo sorteio</button>
+      <button class="btn" onclick="reshuffleGame()" style="border-color:rgba(200,255,87,0.3);color:var(--accent);">↺ Novo sorteio</button>
     </div>
 
     <button class="back-btn" onclick="leaveGame()">← Sair do jogo</button>
@@ -578,18 +464,30 @@
     <div class="header">
       <div class="header-tag">Admin</div>
       <h1>Personagens</h1>
-      <p class="subtitle">Adicione ou remova personagens do jogo. As mudanças valem na próxima partida.</p>
+      <p class="subtitle">Adicione ou remova personagens. As mudanças valem na próxima partida.</p>
     </div>
 
     <div class="card">
       <label>Adicionar personagem</label>
       <div class="add-form">
-        <input type="text" id="new-char-name" placeholder="Nome" maxlength="40" onkeydown="if(event.key==='Enter') addCharacter()" />
-        <input type="text" id="new-char-cat" placeholder="Categoria" maxlength="30" onkeydown="if(event.key==='Enter') addCharacter()" />
+        <input type="text" id="new-char-name" placeholder="Nome" maxlength="40"
+          onkeydown="if(event.key==='Enter') addCharacter()" />
+        <input type="text" id="new-char-cat" placeholder="Categoria" maxlength="30"
+          onkeydown="if(event.key==='Enter') addCharacter()" />
+        <select id="new-char-grp">
+          <option value="padrao">Padrão</option>
+          <option value="full">Full</option>
+        </select>
       </div>
       <button class="btn btn-primary" onclick="addCharacter()">+ Adicionar</button>
       <p class="error" id="admin-add-error"></p>
       <p class="success-msg" id="admin-add-success"></p>
+    </div>
+
+    <!-- Group tabs -->
+    <div class="admin-grp-tabs">
+      <button class="admin-grp-tab active-padrao" id="admin-grp-padrao" onclick="setAdminGrp('padrao')">⬤ Padrão</button>
+      <button class="admin-grp-tab" id="admin-grp-full" onclick="setAdminGrp('full')">⬤ Full</button>
     </div>
 
     <div class="cat-tabs" id="admin-cat-tabs"></div>
@@ -615,7 +513,15 @@ const ADMIN_PASSWORD = 'bdleditor';
 
 const POLL_MS = 3000;
 let state = { roomCode: null, myName: null, isHost: false, pollTimer: null };
+
+// Lobby mode state (host only)
+let lobbyMode = 'all';           // 'all' | 'pick' | 'full'
+let selectedCats = new Set();    // categories selected in pick/full modes
+let availableCatsByMode = { padrao: [], full: [] }; // loaded from DB
+
+// Admin state
 let adminFilter = 'Todos';
+let adminGrp = 'padrao';
 let allChars = [];
 
 // ─── Supabase helpers ────────────────────────────────────────────────────────
@@ -659,19 +565,25 @@ async function getAllCharacters() {
   return await sbFetch('characters?select=*&order=category,name');
 }
 
-async function getAvailableCharacters() {
-  // Busca personagens que NÃO foram usados nas últimas 8 horas
+async function getAvailableCharacters(grp, cats) {
+  // cats = array of category names to include (null = all in grp)
   const cutoff = new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString();
   const used = await sbFetch(`used_characters?used_at=gte.${cutoff}&select=character_id`);
   const usedIds = (used || []).map(r => r.character_id);
-  const all = await getAllCharacters();
-  const available = all.filter(c => !usedIds.includes(c.id));
-  // Se todos estiverem em cooldown, usa a lista completa mesmo
-  return available.length >= 1 ? available : all;
+
+  let query = `characters?select=*&grp=eq.${grp}`;
+  const all = await sbFetch(query);
+
+  // Filter by selected categories if provided
+  let pool = cats && cats.length > 0
+    ? all.filter(c => cats.includes(c.category))
+    : all;
+
+  const available = pool.filter(c => !usedIds.includes(c.id));
+  return available.length >= 1 ? available : pool;
 }
 
 async function markCharactersAsUsed(ids) {
-  // Upsert: atualiza o used_at se já existir, insere se não existir
   await sbFetch('used_characters', {
     method: 'POST',
     prefer: 'resolution=merge-duplicates,return=minimal',
@@ -680,10 +592,10 @@ async function markCharactersAsUsed(ids) {
   });
 }
 
-async function addCharacterDB(name, category) {
+async function addCharacterDB(name, category, grp) {
   await sbFetch('characters', {
     method: 'POST', prefer: 'return=minimal',
-    body: JSON.stringify({ name, category }),
+    body: JSON.stringify({ name, category, grp }),
   });
 }
 
@@ -724,8 +636,9 @@ function shuffle(arr) {
   }
   return a;
 }
-async function assignFamosos(players) {
-  const chars = await getAvailableCharacters();
+
+async function assignFamosos(players, grp, cats) {
+  const chars = await getAvailableCharacters(grp, cats);
   const shuffled = shuffle(chars);
   const assigned = {};
   const usedInThisRound = [];
@@ -734,9 +647,65 @@ async function assignFamosos(players) {
     assigned[p.name] = { name: c.name, cat: c.category };
     if (!usedInThisRound.includes(c.id)) usedInThisRound.push(c.id);
   });
-  // Marca os personagens sorteados como usados (em background, sem bloquear)
   markCharactersAsUsed(usedInThisRound).catch(console.error);
   return assigned;
+}
+
+// ─── Mode selector (lobby) ───────────────────────────────────────────────────
+
+async function loadLobbyCategories() {
+  try {
+    const all = await getAllCharacters();
+    availableCatsByMode.padrao = [...new Set(all.filter(c => c.grp === 'padrao').map(c => c.category))].sort();
+    availableCatsByMode.full   = [...new Set(all.filter(c => c.grp === 'full').map(c => c.category))].sort();
+  } catch (e) { console.error(e); }
+}
+
+function selectMode(mode) {
+  lobbyMode = mode;
+  selectedCats = new Set();
+
+  // Update radio visual
+  ['all','pick','full'].forEach(m => {
+    const el = document.getElementById(`mode-opt-${m}`);
+    el.className = 'mode-option';
+    if (m === mode) el.classList.add(m === 'full' ? 'selected-full' : 'selected-padrao');
+  });
+
+  const area = document.getElementById('cat-select-area');
+
+  if (mode === 'all') {
+    area.style.display = 'none';
+  } else {
+    area.style.display = 'block';
+    const grp = mode === 'full' ? 'full' : 'padrao';
+    const cats = availableCatsByMode[grp];
+    const label = document.getElementById('cat-select-label');
+    const hint  = document.getElementById('cat-select-hint');
+    const container = document.getElementById('cat-pills-select');
+
+    label.textContent = mode === 'full' ? 'Escolha a categoria de especialistas' : 'Selecione as categorias';
+    hint.textContent  = mode === 'full' ? 'Você pode selecionar uma ou mais categorias' : 'Deixe em branco para usar todas';
+
+    container.innerHTML = '';
+    cats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-pill-btn';
+      btn.textContent = cat;
+      btn.onclick = () => toggleCat(cat, btn, grp);
+      container.appendChild(btn);
+    });
+  }
+}
+
+function toggleCat(cat, btn, grp) {
+  if (selectedCats.has(cat)) {
+    selectedCats.delete(cat);
+    btn.className = 'cat-pill-btn';
+  } else {
+    selectedCats.add(cat);
+    btn.className = `cat-pill-btn active-${grp}`;
+  }
 }
 
 // ─── Game ────────────────────────────────────────────────────────────────────
@@ -785,6 +754,13 @@ function enterLobby() {
   document.getElementById('share-link').value = window.location.origin + window.location.pathname + '?room=' + state.roomCode;
   document.getElementById('host-controls').style.display = state.isHost ? 'block' : 'none';
   document.getElementById('guest-waiting').style.display = state.isHost ? 'none' : 'block';
+
+  if (state.isHost) {
+    // Reset mode and load categories
+    selectMode('all');
+    loadLobbyCategories();
+  }
+
   clearInterval(state.pollTimer);
   state.pollTimer = setInterval(pollLobby, POLL_MS);
   pollLobby();
@@ -814,12 +790,21 @@ async function renderLobby() {
 }
 
 async function startGame() {
+  // Validate selection
+  if ((lobbyMode === 'pick' || lobbyMode === 'full') && selectedCats.size === 0) {
+    // If nothing selected, use all categories of that group
+  }
+
   setLoading(true);
   try {
     const room = await getRoom(state.roomCode);
     if (!room) return;
     if (room.players.length < 2) return showError('lobby-error', 'Precisa de pelo menos 2 jogadores.');
-    const characters = await assignFamosos(room.players);
+
+    const grp  = lobbyMode === 'full' ? 'full' : 'padrao';
+    const cats = selectedCats.size > 0 ? [...selectedCats] : null;
+
+    const characters = await assignFamosos(room.players, grp, cats);
     await updateRoom(state.roomCode, { characters, started: true });
     clearInterval(state.pollTimer);
     enterGame({ ...room, characters, started: true });
@@ -866,7 +851,10 @@ async function reshuffleGame() {
   try {
     const room = await getRoom(state.roomCode);
     if (!room) return;
-    const characters = await assignFamosos(room.players);
+    // Reuse the same grp/cats from the last game setup
+    const grp  = lobbyMode === 'full' ? 'full' : 'padrao';
+    const cats = selectedCats.size > 0 ? [...selectedCats] : null;
+    const characters = await assignFamosos(room.players, grp, cats);
     await updateRoom(state.roomCode, { characters });
     enterGame({ ...room, characters });
   } catch (e) {
@@ -903,31 +891,39 @@ function checkAdminPassword() {
   }
 }
 
+function setAdminGrp(grp) {
+  adminGrp = grp;
+  adminFilter = 'Todos';
+  document.getElementById('admin-grp-padrao').className = 'admin-grp-tab' + (grp === 'padrao' ? ' active-padrao' : '');
+  document.getElementById('admin-grp-full').className   = 'admin-grp-tab' + (grp === 'full'   ? ' active-full'   : '');
+  renderAdminCharacters();
+}
+
 async function loadAdminCharacters() {
   setLoading(true);
   try {
     allChars = await getAllCharacters();
     renderAdminCharacters();
-  } catch (e) {
-    console.error(e);
-  } finally { setLoading(false); }
+  } catch (e) { console.error(e); }
+  finally { setLoading(false); }
 }
 
 function renderAdminCharacters() {
-  // Tabs
-  const categories = ['Todos', ...new Set(allChars.map(c => c.category))].sort((a, b) => a === 'Todos' ? -1 : a.localeCompare(b));
+  const grpChars = allChars.filter(c => c.grp === adminGrp);
+  const categories = ['Todos', ...new Set(grpChars.map(c => c.category))].sort((a, b) => a === 'Todos' ? -1 : a.localeCompare(b));
+
   const tabsEl = document.getElementById('admin-cat-tabs');
   tabsEl.innerHTML = '';
   categories.forEach(cat => {
     const btn = document.createElement('button');
-    btn.className = 'cat-tab' + (cat === adminFilter ? ' active' : '');
-    btn.textContent = cat === 'Todos' ? `Todos (${allChars.length})` : cat;
+    const isActive = cat === adminFilter;
+    btn.className = 'cat-tab' + (isActive ? (adminGrp === 'full' ? ' active-full' : ' active') : '');
+    btn.textContent = cat === 'Todos' ? `Todos (${grpChars.length})` : cat;
     btn.onclick = () => { adminFilter = cat; renderAdminCharacters(); };
     tabsEl.appendChild(btn);
   });
 
-  // List
-  const filtered = adminFilter === 'Todos' ? allChars : allChars.filter(c => c.category === adminFilter);
+  const filtered = adminFilter === 'Todos' ? grpChars : grpChars.filter(c => c.category === adminFilter);
   document.getElementById('char-count').textContent = `${filtered.length} personagem${filtered.length !== 1 ? 's' : ''}`;
 
   const ul = document.getElementById('admin-char-list');
@@ -940,6 +936,7 @@ function renderAdminCharacters() {
     li.innerHTML = `
       <span class="char-name">${c.name}</span>
       <span class="char-cat">${c.category}</span>
+      <span class="char-grp ${c.grp === 'full' ? 'grp-full' : 'grp-padrao'}">${c.grp}</span>
       <div class="ml-auto">
         <button class="btn btn-danger btn-sm" onclick="deleteCharacter(${c.id}, '${safeName}')">Remover</button>
       </div>`;
@@ -948,18 +945,20 @@ function renderAdminCharacters() {
 }
 
 async function addCharacter() {
-  const name = document.getElementById('new-char-name').value.trim();
+  const name     = document.getElementById('new-char-name').value.trim();
   const category = document.getElementById('new-char-cat').value.trim();
+  const grp      = document.getElementById('new-char-grp').value;
   if (!name) return showError('admin-add-error', 'Digite o nome do personagem.');
   if (!category) return showError('admin-add-error', 'Digite a categoria.');
   setLoading(true);
   try {
-    await addCharacterDB(name, category);
+    await addCharacterDB(name, category, grp);
     document.getElementById('new-char-name').value = '';
     document.getElementById('new-char-cat').value = '';
     document.getElementById('new-char-name').focus();
     showSuccess('admin-add-success', `"${name}" adicionado!`);
-    adminFilter = category; // switch to the category just added
+    adminGrp = grp;
+    adminFilter = category;
     await loadAdminCharacters();
   } catch (e) {
     showError('admin-add-error', 'Erro ao adicionar. Tente novamente.');
