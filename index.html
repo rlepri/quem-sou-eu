@@ -549,6 +549,10 @@
     <div class="section-label">Personagens dos outros</div>
     <div id="others-list"></div>
 
+    <div id="host-game-controls" style="display:none; margin-top: 1.5rem;">
+      <button class="btn" onclick="reshuffleGame()" style="border-color: rgba(200,255,87,0.3); color: var(--accent);">↺ Novo sorteio</button>
+    </div>
+
     <button class="back-btn" onclick="leaveGame()">← Sair do jogo</button>
   </div>
 
@@ -801,6 +805,7 @@ async function startGame() {
 }
 
 function enterGame(room) {
+  document.getElementById('host-game-controls').style.display = state.isHost ? 'block' : 'none';
   showScreen('screen-game');
   const others = document.getElementById('others-list');
   others.innerHTML = '';
@@ -828,6 +833,20 @@ function copyLink() {
   const btn = document.getElementById('copy-btn');
   btn.textContent = 'Copiado ✓';
   setTimeout(() => btn.textContent = 'Copiar link', 2000);
+}
+
+async function reshuffleGame() {
+  if (!confirm('Gerar um novo sorteio para todos os jogadores da sala? Os personagens atuais serão substituídos.')) return;
+  setLoading(true);
+  try {
+    const room = await getRoom(state.roomCode);
+    if (!room) return;
+    const characters = await assignFamosos(room.players);
+    await updateRoom(state.roomCode, { characters });
+    enterGame({ ...room, characters });
+  } catch (e) {
+    console.error('Erro ao ressortear:', e);
+  } finally { setLoading(false); }
 }
 
 async function leaveGame() {
