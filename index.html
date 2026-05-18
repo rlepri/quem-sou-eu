@@ -659,6 +659,27 @@ async function getAllCharacters() {
   return await sbFetch('characters?select=*&order=category,name');
 }
 
+async function getAvailableCharacters() {
+  // Busca personagens que NÃO foram usados nas últimas 8 horas
+  const cutoff = new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString();
+  const used = await sbFetch(`used_characters?used_at=gte.${cutoff}&select=character_id`);
+  const usedIds = (used || []).map(r => r.character_id);
+  const all = await getAllCharacters();
+  const available = all.filter(c => !usedIds.includes(c.id));
+  // Se todos estiverem em cooldown, usa a lista completa mesmo
+  return available.length >= 1 ? available : all;
+}
+
+async function markCharactersAsUsed(ids) {
+  // Upsert: atualiza o used_at se já existir, insere se não existir
+  await sbFetch('used_characters', {
+    method: 'POST',
+    prefer: 'resolution=merge-duplicates,return=minimal',
+    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify(ids.map(id => ({ character_id: id, used_at: new Date().toISOString() }))),
+  });
+}
+
 async function addCharacterDB(name, category) {
   await sbFetch('characters', {
     method: 'POST', prefer: 'return=minimal',
@@ -704,13 +725,17 @@ function shuffle(arr) {
   return a;
 }
 async function assignFamosos(players) {
-  const chars = await getAllCharacters();
+  const chars = await getAvailableCharacters();
   const shuffled = shuffle(chars);
   const assigned = {};
+  const usedInThisRound = [];
   players.forEach((p, i) => {
     const c = shuffled[i % shuffled.length];
     assigned[p.name] = { name: c.name, cat: c.category };
+    if (!usedInThisRound.includes(c.id)) usedInThisRound.push(c.id);
   });
+  // Marca os personagens sorteados como usados (em background, sem bloquear)
+  markCharactersAsUsed(usedInThisRound).catch(console.error);
   return assigned;
 }
 
