@@ -817,6 +817,17 @@ async function startGame() {
 function enterGame(room) {
   document.getElementById('host-game-controls').style.display = state.isHost ? 'block' : 'none';
   showScreen('screen-game');
+  renderGameScreen(room);
+
+  // Non-hosts poll for character updates (reshuffle detection)
+  if (!state.isHost) {
+    clearInterval(state.pollTimer);
+    state.gameCharHash = JSON.stringify(room.characters);
+    state.pollTimer = setInterval(pollGame, POLL_MS);
+  }
+}
+
+function renderGameScreen(room) {
   const others = document.getElementById('others-list');
   others.innerHTML = '';
   room.players.forEach((p, idx) => {
@@ -834,6 +845,18 @@ function enterGame(room) {
       </div>`;
     others.appendChild(card);
   });
+}
+
+async function pollGame() {
+  try {
+    const room = await getRoom(state.roomCode);
+    if (!room) return;
+    const newHash = JSON.stringify(room.characters);
+    if (newHash !== state.gameCharHash) {
+      state.gameCharHash = newHash;
+      renderGameScreen(room);
+    }
+  } catch (e) { console.error(e); }
 }
 
 async function pollLobby() { await renderLobby(); }
