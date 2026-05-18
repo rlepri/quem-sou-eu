@@ -617,6 +617,29 @@ async function deleteCharacterDB(id) {
   });
 }
 
+// ─── Animação Decifrar ───────────────────────────────────────────────────────
+
+const DECIPHER_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&?!';
+function randDChar() { return DECIPHER_CHARS[Math.floor(Math.random() * DECIPHER_CHARS.length)]; }
+
+function decipher(el, target, duration = 800) {
+  const letters = target.split('');
+  const totalFrames = 20;
+  const resolveStart = 0.25;
+  let frame = 0;
+  el.textContent = letters.map(ch => ch === ' ' ? ' ' : randDChar()).join('');
+  const tick = setInterval(() => {
+    frame++;
+    const progress = frame / totalFrames;
+    el.textContent = letters.map((ch, i) => {
+      if (ch === ' ') return ' ';
+      const resolveAt = resolveStart + (i / letters.length) * (1 - resolveStart);
+      return progress >= resolveAt ? ch : randDChar();
+    }).join('');
+    if (frame >= totalFrames) { clearInterval(tick); el.textContent = target; }
+  }, duration / totalFrames);
+}
+
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
 function genCode() { return Math.random().toString(36).substring(2, 6).toUpperCase(); }
@@ -872,14 +895,16 @@ function renderGameScreen(room) {
     const card = document.createElement('div');
     card.className = 'identity-card';
     card.style.animationDelay = (idx * 0.07) + 's';
+    const nameId = `identity-name-${idx}`;
     card.innerHTML = `
       <div class="identity-avatar">${initials(p.name)}</div>
       <div class="identity-info">
         <div class="identity-player">${p.name} é...</div>
-        <div class="identity-name-val">${famoso.name}</div>
+        <div class="identity-name-val" id="${nameId}"></div>
         <span class="identity-cat">${famoso.cat}</span>
       </div>`;
     others.appendChild(card);
+    decipher(document.getElementById(nameId), famoso.name, 900);
   });
 }
 
