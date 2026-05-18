@@ -334,7 +334,7 @@
       <h1>Quem<br><span>Sou Eu?</span></h1>
       <p class="subtitle">Crie uma sala, mande o link pros amigos no Discord e descubra quem você é!</p>
     </div>
-    <div class="card">
+    <div class="card" id="home-card-default">
       <label>Seu nome</label>
       <input type="text" id="home-name" placeholder="Como quer ser chamado?" maxlength="20" />
       <button class="btn btn-primary" onclick="createRoom()">✦ Criar sala</button>
@@ -343,6 +343,14 @@
       <input type="text" id="home-code" placeholder="Ex: AB12" maxlength="4"
         style="text-transform:uppercase;letter-spacing:4px;font-family:'Syne',sans-serif;font-weight:700;" />
       <button class="btn" onclick="joinRoom()">Entrar na sala →</button>
+    </div>
+
+    <div class="card" id="home-card-invite" style="display:none">
+      <label>Seu nome</label>
+      <input type="text" id="home-name-invite" placeholder="Como quer ser chamado?" maxlength="20" />
+      <button class="btn btn-primary" onclick="joinRoomInvite()">Entrar na sala →</button>
+      <div class="divider">ou</div>
+      <button class="btn" onclick="showDefaultHome()">✦ Criar outra sala</button>
     </div>
     <p class="error" id="home-error"></p>
     <div class="admin-link"><button onclick="showAdminLogin()">⚙ admin</button></div>
@@ -775,21 +783,45 @@ async function renderLobby() {
     const room = await getRoom(state.roomCode);
     if (!room) return;
     if (room.started) { clearInterval(state.pollTimer); return enterGame(room); }
+
+    // Detect if current non-host player was kicked
+    if (!state.isHost && !room.players.find(p => p.name === state.myName)) {
+      clearInterval(state.pollTimer);
+      state = {};
+      alert('Você foi removido da sala pelo host.');
+      showScreen('screen-home');
+      return;
+    }
+
     const ul = document.getElementById('lobby-players');
     ul.innerHTML = '';
     room.players.forEach(p => {
       const li = document.createElement('li');
       li.className = 'player-item';
+      const isHost = p.name === room.host;
+      const isMe   = p.name === state.myName;
+      const canKick = state.isHost && !isHost && !isMe;
+      const safeName = p.name.replace(/'/g, "\'");
       li.innerHTML = `
         <div class="avatar">${initials(p.name)}</div>
         <span>${p.name}</span>
         <div class="ml-auto">
-          ${p.name === room.host ? '<span class="badge badge-host">host</span>' : ''}
-          ${p.name === state.myName ? '<span class="badge badge-you">você</span>' : ''}
+          ${isHost ? '<span class="badge badge-host">host</span>' : ''}
+          ${isMe   ? '<span class="badge badge-you">você</span>'  : ''}
+          ${canKick ? `<button class="btn btn-danger btn-sm" onclick="kickPlayer('${safeName}')">Kick</button>` : ''}
         </div>`;
       ul.appendChild(li);
     });
     if (state.isHost) document.getElementById('start-btn').disabled = room.players.length < 2;
+  } catch (e) { console.error(e); }
+}
+
+async function kickPlayer(name) {
+  if (!confirm(`Remover "${name}" da sala?`)) return;
+  try {
+    const room = await getRoom(state.roomCode);
+    if (!room) return;
+    await updateRoom(state.roomCode, { players: room.players.filter(p => p.name !== name) });
   } catch (e) { console.error(e); }
 }
 
@@ -1030,7 +1062,30 @@ async function deleteCategory(category, count) {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 const params = new URLSearchParams(window.location.search);
-if (params.get('room')) document.getElementById('home-code').value = params.get('room');
+const inviteCode = params.get('room');
+if (inviteCode) {
+  // Invited via link — show join-first layout
+  document.getElementById('home-card-default').style.display = 'none';
+  document.getElementById('home-card-invite').style.display = 'block';
+  document.querySelector('#screen-home .subtitle').textContent = 'Você foi convidado para uma sala! Digite seu nome e entre.';
+  // Keep the code hidden in the default card too for fallback
+  document.getElementById('home-code').value = inviteCode;
+}
+
+function showDefaultHome() {
+  document.getElementById('home-card-invite').style.display = 'none';
+  document.getElementById('home-card-default').style.display = 'block';
+  document.querySelector('#screen-home .subtitle').textContent = 'Crie uma sala, mande o link pros amigos no Discord e descubra quem você é!';
+}
+
+async function joinRoomInvite() {
+  const name = document.getElementById('home-name-invite').value.trim();
+  // Copy name to the shared input and reuse joinRoom logic
+  document.getElementById('home-name').value = name;
+  await joinRoom();
+  // Sync invite name field back in case of error
+  document.getElementById('home-name-invite').value = name;
+}
 </script>
 </body>
 </html>
