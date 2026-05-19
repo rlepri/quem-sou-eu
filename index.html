@@ -337,6 +337,10 @@
       font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
       color: var(--accent); white-space: nowrap;
     }
+    .solved-zero {
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
+      color: var(--muted); white-space: nowrap;
+    }
     .btn-solve {
       font-size: 11px; padding: 4px 12px; border-radius: 999px; cursor: pointer;
       background: var(--accent-dim); color: var(--accent);
@@ -347,16 +351,21 @@
 
     /* ── Toast notification ── */
     .toast {
-      position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-80px);
+      position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-120px);
       background: var(--surface); border: 1px solid rgba(200,255,87,0.35);
       border-radius: var(--radius); padding: 1rem 1.5rem;
       display: flex; align-items: center; gap: 12px;
       font-size: 14px; color: var(--text); z-index: 200;
-      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), visibility 0s linear 0.4s;
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
       min-width: 260px; max-width: 340px;
+      visibility: hidden;
     }
-    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      visibility: visible;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), visibility 0s linear 0s;
+    }
     .toast-icon { font-size: 22px; flex-shrink: 0; }
     .toast-name { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); }
     .toast-pts { font-size: 12px; color: var(--muted); margin-top: 2px; }
@@ -545,15 +554,19 @@
     </div>
 
     <div class="section-label">Seu personagem</div>
-    <div class="mystery-card">
+    <div class="mystery-card" id="my-mystery-card">
       <div class="mystery-marks">? ? ?</div>
       <div class="mystery-hint">Faça perguntas de sim ou não para descobrir!</div>
     </div>
+    <div id="my-solved-card" style="display:none"></div>
 
     <div class="section-label">Personagens dos outros</div>
     <div id="others-list"></div>
 
     <div id="host-game-controls" style="display:none; margin-top: 1.5rem;">
+      <button class="btn-solve" id="btn-i-solved" onclick="markMyselfSolved(event)" style="width:100%;padding:10px;font-size:13px;border-radius:var(--radius-sm);margin-bottom:0.6rem;display:block;">
+        🙋 Eu adivinhei o meu!
+      </button>
       <button class="btn" onclick="reshuffleGame()" style="border-color:rgba(200,255,87,0.3);color:var(--accent);">↺ Novo sorteio</button>
     </div>
 
@@ -791,7 +804,7 @@ function showToast(icon, name, pts) {
   const t = document.getElementById('toast');
   document.getElementById('toast-icon').textContent = icon;
   document.getElementById('toast-name').textContent = name + ' adivinhou!';
-  document.getElementById('toast-pts').textContent = '+' + pts + ' pontos';
+  document.getElementById('toast-pts').textContent  = pts > 0 ? '+' + pts + ' pontos' : 'último a adivinhar — 0 pts';
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
@@ -1097,16 +1110,60 @@ function enterGame(room) {
   }
 }
 
+function calcPoints(position, totalPlayers) {
+  // Último sempre zera, independente de quantos jogadores
+  if (position >= totalPlayers) return 0;
+  return Math.max(10, 100 - (position - 1) * 10);
+}
+
+function renderMyCard(room) {
+  const solved = room.solved || [];
+  const myEntry = solved.find(s => s.name === state.myName);
+  const mysteryCard  = document.getElementById('my-mystery-card');
+  const mySolvedCard = document.getElementById('my-solved-card');
+  const btnISolved   = document.getElementById('btn-i-solved');
+
+  if (myEntry) {
+    const myFamoso = room.characters[state.myName] || { name: '?', cat: '' };
+    mysteryCard.style.display  = 'none';
+    mySolvedCard.style.display = 'block';
+    if (btnISolved) btnISolved.style.display = 'none';
+    const ptsHtml = myEntry.pts > 0
+      ? `<span class="solved-pts">+${myEntry.pts} pts</span>`
+      : `<span class="solved-zero">0 pts</span>`;
+    mySolvedCard.innerHTML = `
+      <div class="identity-card solved" style="margin-bottom:0.75rem;">
+        <div class="identity-avatar" style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(200,255,87,0.3);">${initials(state.myName)}</div>
+        <div class="identity-info">
+          <div class="identity-player">Você era...</div>
+          <div class="identity-name-val">${myFamoso.name}</div>
+          <span class="identity-cat">${myFamoso.cat}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+          <span class="solved-badge">✓ Adivinhou!</span>
+          ${ptsHtml}
+        </div>
+      </div>`;
+  } else {
+    mysteryCard.style.display  = 'block';
+    mySolvedCard.style.display = 'none';
+    if (btnISolved) btnISolved.style.display = 'block';
+  }
+}
+
 function renderGameScreen(room) {
   const solved = room.solved || [];
   const solvedNames = solved.map(s => s.name);
+  const totalPlayers = room.players.length;
   const others = document.getElementById('others-list');
   others.innerHTML = '';
+
+  renderMyCard(room);
 
   room.players.forEach((p, idx) => {
     if (p.name === state.myName) return;
     const famoso = room.characters[p.name] || { name: '?', cat: '' };
-    const isSolved = solvedNames.includes(p.name);
+    const isSolved   = solvedNames.includes(p.name);
     const solvedEntry = solved.find(s => s.name === p.name);
     const card = document.createElement('div');
     card.className = 'identity-card' + (isSolved ? ' solved' : '');
@@ -1114,14 +1171,19 @@ function renderGameScreen(room) {
     card.style.animationDelay = (idx * 0.07) + 's';
 
     const nameId = `identity-name-${idx}`;
-    const rightCol = isSolved
-      ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
-           <span class="solved-badge">✓ Adivinhou!</span>
-           <span class="solved-pts">+${solvedEntry.pts} pts</span>
-         </div>`
-      : state.isHost
-        ? `<button class="btn-solve" onclick="markSolved('${p.name.replace(/'/g,"\\'")}', event)">Adivinhou!</button>`
-        : '';
+    let rightCol = '';
+    if (isSolved) {
+      const ptsHtml = solvedEntry.pts > 0
+        ? `<span class="solved-pts">+${solvedEntry.pts} pts</span>`
+        : `<span class="solved-zero">0 pts</span>`;
+      rightCol = `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <span class="solved-badge">✓ Adivinhou!</span>
+        ${ptsHtml}
+      </div>`;
+    } else if (state.isHost) {
+      const safeName = p.name.replace(/'/g,"\\'");
+      rightCol = `<button class="btn-solve" onclick="markSolved('${safeName}', event)">Adivinhou!</button>`;
+    }
 
     card.innerHTML = `
       <div class="identity-avatar">${initials(p.name)}</div>
@@ -1140,9 +1202,8 @@ function renderGameScreen(room) {
     }
   });
 
-  // Check if all solved → show final screen hint
-  const otherPlayers = room.players.filter(p => p.name !== state.myName);
-  if (otherPlayers.length > 0 && otherPlayers.every(p => solvedNames.includes(p.name))) {
+  // Banner só quando TODOS (incluindo o host) resolveram
+  if (room.players.length > 0 && room.players.every(p => solvedNames.includes(p.name))) {
     const banner = document.createElement('div');
     banner.style.cssText = 'text-align:center;padding:1.5rem;color:var(--accent);font-family:Syne,sans-serif;font-weight:800;font-size:1.1rem;margin-top:0.5rem;';
     banner.textContent = '🏆 Todos adivinharam!';
@@ -1158,24 +1219,40 @@ async function markSolved(playerName, evt) {
     const solved = room.solved || [];
     if (solved.find(s => s.name === playerName)) return;
 
+    const totalPlayers = room.players.length;
     const position = solved.length + 1;
-    const pts = Math.max(10, 100 - (position - 1) * 10);
+    const pts = calcPoints(position, totalPlayers);
     const newSolved = [...solved, { name: playerName, position, pts }];
     await updateRoom(state.roomCode, { solved: newSolved });
 
-    // Save to scores table
-    const famoso = room.characters[playerName] || {};
     saveScores([{ player_name: playerName, points: pts, position, room_code: state.roomCode }]).catch(console.error);
 
-    // Confete na posição do clique
     if (evt) launchConfetti(evt.clientX, evt.clientY);
-
-    // Toast
     const medals = ['🥇','🥈','🥉'];
-    const icon = medals[position - 1] || '🎉';
-    showToast(icon, playerName, pts);
+    showToast(medals[position - 1] || '🎉', playerName, pts);
+    renderGameScreen({ ...room, solved: newSolved });
+  } catch(e) { console.error(e); }
+}
 
-    // Re-render
+async function markMyselfSolved(evt) {
+  if (!state.isHost) return;
+  try {
+    const room = await getRoom(state.roomCode);
+    if (!room) return;
+    const solved = room.solved || [];
+    if (solved.find(s => s.name === state.myName)) return;
+
+    const totalPlayers = room.players.length;
+    const position = solved.length + 1;
+    const pts = calcPoints(position, totalPlayers);
+    const newSolved = [...solved, { name: state.myName, position, pts }];
+    await updateRoom(state.roomCode, { solved: newSolved });
+
+    saveScores([{ player_name: state.myName, points: pts, position, room_code: state.roomCode }]).catch(console.error);
+
+    if (evt) launchConfetti(evt.clientX, evt.clientY);
+    const medals = ['🥇','🥈','🥉'];
+    showToast(medals[position - 1] || '🎉', state.myName, pts);
     renderGameScreen({ ...room, solved: newSolved });
   } catch(e) { console.error(e); }
 }
