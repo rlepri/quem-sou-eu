@@ -319,11 +319,99 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Solved card ── */
+    .identity-card.solved {
+      border-color: rgba(200,255,87,0.35);
+      background: rgba(200,255,87,0.06);
+    }
+    .identity-card.solved .identity-avatar {
+      background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(200,255,87,0.3);
+    }
+    .solved-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+      background: var(--accent-dim); color: var(--accent);
+      border: 1px solid rgba(200,255,87,0.3); letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .solved-pts {
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
+      color: var(--accent); white-space: nowrap;
+    }
+    .btn-solve {
+      font-size: 11px; padding: 4px 12px; border-radius: 999px; cursor: pointer;
+      background: var(--accent-dim); color: var(--accent);
+      border: 1px solid rgba(200,255,87,0.3); font-family: 'DM Sans', sans-serif;
+      font-weight: 600; transition: background 0.15s; white-space: nowrap;
+    }
+    .btn-solve:hover { background: rgba(200,255,87,0.2); }
+
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-80px);
+      background: var(--surface); border: 1px solid rgba(200,255,87,0.35);
+      border-radius: var(--radius); padding: 1rem 1.5rem;
+      display: flex; align-items: center; gap: 12px;
+      font-size: 14px; color: var(--text); z-index: 200;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      min-width: 260px; max-width: 340px;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast-icon { font-size: 22px; flex-shrink: 0; }
+    .toast-name { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); }
+    .toast-pts { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Confete ── */
+    .confetti-piece {
+      position: fixed; width: 8px; height: 8px; border-radius: 2px;
+      pointer-events: none; z-index: 300;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── Ranking ── */
+    .rank-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .rank-filter-btn {
+      font-size: 12px; padding: 5px 13px; border-radius: 999px;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .rank-filter-btn.active { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,255,87,0.35); }
+    .rank-list { list-style: none; }
+    .rank-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+      animation: fadeUp 0.35s ease both;
+    }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-pos {
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
+      width: 28px; text-align: center; flex-shrink: 0;
+    }
+    .rank-pos.gold { color: #FFD700; }
+    .rank-pos.silver { color: #C0C0C0; }
+    .rank-pos.bronze { color: #CD7F32; }
+    .rank-pos.other { color: var(--muted); }
+    .rank-name { flex: 1; font-weight: 500; }
+    .rank-pts { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--accent); }
+    .rank-games { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .rank-empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 14px; }
   </style>
 </head>
 <body>
 
 <div class="loading-overlay hidden" id="loading-overlay"><div class="spinner"></div></div>
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">🎉</div>
+  <div>
+    <div class="toast-name" id="toast-name"></div>
+    <div class="toast-pts" id="toast-pts"></div>
+  </div>
+</div>
 
 <div class="container">
 
@@ -353,7 +441,29 @@
       <button class="btn" onclick="showDefaultHome()">✦ Criar outra sala</button>
     </div>
     <p class="error" id="home-error"></p>
-    <div class="admin-link"><button onclick="showAdminLogin()">⚙ admin</button></div>
+    <div style="display:flex; gap:8px; justify-content:center; margin-top:1.5rem;">
+      <div class="admin-link"><button onclick="showScreen('screen-ranking'); loadRanking()">🏆 Ranking</button></div>
+      <div class="admin-link"><button onclick="showAdminLogin()">⚙ admin</button></div>
+    </div>
+  </div>
+
+  <!-- RANKING -->
+  <div class="screen" id="screen-ranking">
+    <div class="header">
+      <div class="header-tag">Hall da Fama</div>
+      <h1>Ranking<br><span>Global</span></h1>
+      <p class="subtitle">Pontuação acumulada de todas as partidas.</p>
+    </div>
+    <div class="rank-filter-row" id="rank-filters">
+      <button class="rank-filter-btn active" onclick="setRankFilter('all', this)">Toda história</button>
+      <button class="rank-filter-btn" onclick="setRankFilter('year', this)">Último ano</button>
+      <button class="rank-filter-btn" onclick="setRankFilter('month', this)">Último mês</button>
+      <button class="rank-filter-btn" onclick="setRankFilter('day', this)">Últimas 24h</button>
+    </div>
+    <div class="card" style="padding: 0.25rem 1.5rem; min-height: 120px;">
+      <ul class="rank-list" id="rank-list"><li class="rank-empty">Carregando...</li></ul>
+    </div>
+    <button class="back-btn" onclick="showScreen('screen-home')">← Voltar</button>
   </div>
 
   <!-- LOBBY -->
@@ -617,6 +727,21 @@ async function deleteCharacterDB(id) {
   });
 }
 
+async function saveScores(entries) {
+  // entries: [{player_name, points, position, room_code}]
+  await sbFetch('scores', {
+    method: 'POST', prefer: 'return=minimal',
+    body: JSON.stringify(entries),
+  });
+}
+
+async function getScores(since) {
+  // since = ISO string or null for all time
+  let url = 'scores?select=player_name,points,position,room_code,created_at&order=created_at.desc';
+  if (since) url += `&created_at=gte.${since}`;
+  return await sbFetch(url);
+}
+
 // ─── Animação Decifrar ───────────────────────────────────────────────────────
 
 const DECIPHER_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&?!';
@@ -638,6 +763,91 @@ function decipher(el, target, duration = 800) {
     }).join('');
     if (frame >= totalFrames) { clearInterval(tick); el.textContent = target; }
   }, duration / totalFrames);
+}
+
+// ─── Confete ─────────────────────────────────────────────────────────────────
+
+function launchConfetti(x, y) {
+  const colors = ['#c8ff57','#a78bfa','#ff5757','#57c8ff','#ffb457'];
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = (x + (Math.random() - 0.5) * 120) + 'px';
+    el.style.top = (y + (Math.random() - 0.5) * 40) + 'px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.width = (6 + Math.random() * 6) + 'px';
+    el.style.height = (6 + Math.random() * 6) + 'px';
+    el.style.animationDuration = (1.2 + Math.random() * 1.2) + 's';
+    el.style.animationDelay = (Math.random() * 0.3) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
+  }
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+
+let toastTimer = null;
+function showToast(icon, name, pts) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-name').textContent = name + ' adivinhou!';
+  document.getElementById('toast-pts').textContent = '+' + pts + ' pontos';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ─── Ranking ─────────────────────────────────────────────────────────────────
+
+let rankFilter = 'all';
+
+function setRankFilter(filter, btn) {
+  rankFilter = filter;
+  document.querySelectorAll('.rank-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadRanking();
+}
+
+async function loadRanking() {
+  const ul = document.getElementById('rank-list');
+  ul.innerHTML = '<li class="rank-empty">Carregando...</li>';
+  try {
+    let since = null;
+    const now = new Date();
+    if (rankFilter === 'year')  { const d = new Date(now); d.setFullYear(d.getFullYear()-1); since = d.toISOString(); }
+    if (rankFilter === 'month') { const d = new Date(now); d.setMonth(d.getMonth()-1); since = d.toISOString(); }
+    if (rankFilter === 'day')   { const d = new Date(now); d.setDate(d.getDate()-1); since = d.toISOString(); }
+
+    const rows = await getScores(since);
+    if (!rows || rows.length === 0) { ul.innerHTML = '<li class="rank-empty">Nenhuma partida ainda neste período.</li>'; return; }
+
+    // Aggregate by player
+    const agg = {};
+    rows.forEach(r => {
+      if (!agg[r.player_name]) agg[r.player_name] = { total: 0, games: 0 };
+      agg[r.player_name].total += r.points;
+      agg[r.player_name].games += 1;
+    });
+    const sorted = Object.entries(agg).sort((a,b) => b[1].total - a[1].total);
+
+    ul.innerHTML = '';
+    sorted.forEach(([name, data], i) => {
+      const li = document.createElement('li');
+      li.className = 'rank-item';
+      li.style.animationDelay = (i * 0.05) + 's';
+      const posClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'other';
+      const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+      li.innerHTML = `
+        <div class="rank-pos ${posClass}">${posLabel}</div>
+        <div class="identity-avatar" style="width:34px;height:34px;font-size:11px;">${initials(name)}</div>
+        <div style="flex:1">
+          <div class="rank-name">${name}</div>
+          <div class="rank-games">${data.games} rodada${data.games !== 1 ? 's' : ''}</div>
+        </div>
+        <div class="rank-pts">${data.total} pts</div>`;
+      ul.appendChild(li);
+    });
+  } catch(e) { ul.innerHTML = '<li class="rank-empty">Erro ao carregar ranking.</li>'; console.error(e); }
 }
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
@@ -878,42 +1088,117 @@ function enterGame(room) {
   showScreen('screen-game');
   renderGameScreen(room);
 
-  // Non-hosts poll for character updates (reshuffle detection)
+  // Non-hosts poll for character and solved updates
   if (!state.isHost) {
     clearInterval(state.pollTimer);
-    state.gameCharHash = JSON.stringify(room.characters);
+    state.gameCharHash = JSON.stringify(room.characters) + JSON.stringify(room.solved || []);
+    state.prevSolvedCount = (room.solved || []).length;
     state.pollTimer = setInterval(pollGame, POLL_MS);
   }
 }
 
 function renderGameScreen(room) {
+  const solved = room.solved || [];
+  const solvedNames = solved.map(s => s.name);
   const others = document.getElementById('others-list');
   others.innerHTML = '';
+
   room.players.forEach((p, idx) => {
     if (p.name === state.myName) return;
     const famoso = room.characters[p.name] || { name: '?', cat: '' };
+    const isSolved = solvedNames.includes(p.name);
+    const solvedEntry = solved.find(s => s.name === p.name);
     const card = document.createElement('div');
-    card.className = 'identity-card';
+    card.className = 'identity-card' + (isSolved ? ' solved' : '');
+    card.dataset.player = p.name;
     card.style.animationDelay = (idx * 0.07) + 's';
+
     const nameId = `identity-name-${idx}`;
+    const rightCol = isSolved
+      ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+           <span class="solved-badge">✓ Adivinhou!</span>
+           <span class="solved-pts">+${solvedEntry.pts} pts</span>
+         </div>`
+      : state.isHost
+        ? `<button class="btn-solve" onclick="markSolved('${p.name.replace(/'/g,"\\'")}', event)">Adivinhou!</button>`
+        : '';
+
     card.innerHTML = `
       <div class="identity-avatar">${initials(p.name)}</div>
       <div class="identity-info">
         <div class="identity-player">${p.name} é...</div>
         <div class="identity-name-val" id="${nameId}"></div>
         <span class="identity-cat">${famoso.cat}</span>
-      </div>`;
+      </div>
+      ${rightCol}`;
     others.appendChild(card);
-    decipher(document.getElementById(nameId), famoso.name, 900);
+
+    if (isSolved) {
+      document.getElementById(nameId).textContent = famoso.name;
+    } else {
+      decipher(document.getElementById(nameId), famoso.name, 900);
+    }
   });
+
+  // Check if all solved → show final screen hint
+  const otherPlayers = room.players.filter(p => p.name !== state.myName);
+  if (otherPlayers.length > 0 && otherPlayers.every(p => solvedNames.includes(p.name))) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'text-align:center;padding:1.5rem;color:var(--accent);font-family:Syne,sans-serif;font-weight:800;font-size:1.1rem;margin-top:0.5rem;';
+    banner.textContent = '🏆 Todos adivinharam!';
+    others.appendChild(banner);
+  }
+}
+
+async function markSolved(playerName, evt) {
+  if (!state.isHost) return;
+  try {
+    const room = await getRoom(state.roomCode);
+    if (!room) return;
+    const solved = room.solved || [];
+    if (solved.find(s => s.name === playerName)) return;
+
+    const position = solved.length + 1;
+    const pts = Math.max(10, 100 - (position - 1) * 10);
+    const newSolved = [...solved, { name: playerName, position, pts }];
+    await updateRoom(state.roomCode, { solved: newSolved });
+
+    // Save to scores table
+    const famoso = room.characters[playerName] || {};
+    saveScores([{ player_name: playerName, points: pts, position, room_code: state.roomCode }]).catch(console.error);
+
+    // Confete na posição do clique
+    if (evt) launchConfetti(evt.clientX, evt.clientY);
+
+    // Toast
+    const medals = ['🥇','🥈','🥉'];
+    const icon = medals[position - 1] || '🎉';
+    showToast(icon, playerName, pts);
+
+    // Re-render
+    renderGameScreen({ ...room, solved: newSolved });
+  } catch(e) { console.error(e); }
 }
 
 async function pollGame() {
   try {
     const room = await getRoom(state.roomCode);
     if (!room) return;
-    const newHash = JSON.stringify(room.characters);
+    const newHash = JSON.stringify(room.characters) + JSON.stringify(room.solved);
     if (newHash !== state.gameCharHash) {
+      // Detect newly solved to show toast for guests
+      if (!state.isHost) {
+        const oldSolved = JSON.parse((state.gameCharHash || '').replace(/\{.*\}/, '[]').replace(/^\[.*\]/, '') || '[]');
+        const newSolved = room.solved || [];
+        const prevCount = (state.prevSolvedCount || 0);
+        if (newSolved.length > prevCount) {
+          const newest = newSolved[newSolved.length - 1];
+          const medals = ['🥇','🥈','🥉'];
+          showToast(medals[newest.position - 1] || '🎉', newest.name, newest.pts);
+          launchConfetti(window.innerWidth / 2, 120);
+        }
+        state.prevSolvedCount = newSolved.length;
+      }
       state.gameCharHash = newHash;
       renderGameScreen(room);
     }
@@ -939,7 +1224,7 @@ async function reshuffleGame() {
     const grp  = lobbyMode === 'full' ? 'full' : 'padrao';
     const cats = selectedCats.size > 0 ? [...selectedCats] : null;
     const characters = await assignFamosos(room.players, grp, cats);
-    await updateRoom(state.roomCode, { characters });
+    await updateRoom(state.roomCode, { characters, solved: [] });
     enterGame({ ...room, characters });
   } catch (e) {
     console.error('Erro ao ressortear:', e);
